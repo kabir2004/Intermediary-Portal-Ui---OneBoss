@@ -3654,6 +3654,10 @@ const ClientDetails = () => {
                   const accountKey = `account${planIndex + 1}`;
                   const isCollapsed = collapsedAccounts.has(accountKey);
                   
+                  // Get first fund for collapsed view actions
+                  const firstFundId = planInvestments.length > 0 ? planInvestments[0] : null;
+                  const firstFund = firstFundId ? getFundAccountById(firstFundId) : null;
+                  
                   // Determine plan category display text
                   const getPlanCategoryText = () => {
                     if (plan.category === "Joint") {
@@ -3688,9 +3692,99 @@ const ClientDetails = () => {
                           </div>
                         </div>
                         <div className="flex items-center gap-2 flex-shrink-0">
-                          <span className="text-xs font-semibold text-gray-900 mr-96">
-                            ${planTotal.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-                          </span>
+                          <div className="flex items-center">
+                            <span className="text-xs font-semibold text-gray-900 mr-96">
+                              ${planTotal.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                            </span>
+                            {firstFund && (() => {
+                              const priceStr = firstFund.currentPrice || "$0.00";
+                              const price = parseFloat(priceStr.replace(/[^0-9.]/g, '')) || 0;
+                              const marketValueNum = parseFloat(firstFund.marketValue.replace(/[^0-9.]/g, '')) || 0;
+                              const units = price > 0 ? (marketValueNum / price) : 0;
+                              const marketValueFormatted = marketValueNum.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                              
+                              return (
+                                <div className="flex items-center gap-1 relative -left-[220px]">
+                                  <Button 
+                                    variant="ghost" 
+                                    size="sm" 
+                                    className="h-6 w-6 p-0 hover:bg-gray-100"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      setSelectedProduct({
+                                        product: firstFund.productName,
+                                        units: units > 0 ? units.toFixed(2) : "0.00",
+                                        price: price > 0 ? `$${price.toFixed(2)}` : "$0.00",
+                                        marketValue: `$${marketValueFormatted}`
+                                      });
+                                      setSelectedPlan({
+                                        shortType: plan.type || "RRSP",
+                                        accountNumber: plan.accountNumber || ""
+                                      });
+                                      setSelectedPlanBalance(planTotal);
+                                      setInvestmentAmount("");
+                                      setNumberOfUnits("");
+                                      setIsBuyUnitsDialogOpen(true);
+                                    }}
+                                  >
+                                    <Plus className="h-3 w-3" />
+                                  </Button>
+                                  <Button 
+                                    variant="ghost" 
+                                    size="sm" 
+                                    className="h-6 w-6 p-0 hover:bg-gray-100"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      setSelectedProduct({
+                                        product: firstFund.productName,
+                                        units: units > 0 ? units.toFixed(2) : "0.00",
+                                        price: price > 0 ? `$${price.toFixed(2)}` : "$0.00",
+                                        marketValue: `$${marketValueFormatted}`
+                                      });
+                                      setSelectedPlan({
+                                        shortType: plan.type || "RRSP",
+                                        accountNumber: plan.accountNumber || ""
+                                      });
+                                      setSelectedPlanBalance(planTotal);
+                                      setSellUnits("");
+                                      setSellDollarAmount("");
+                                      setIsSellUnitsDialogOpen(true);
+                                    }}
+                                  >
+                                    <Minus className="h-3 w-3" />
+                                  </Button>
+                                  <Button 
+                                    variant="ghost" 
+                                    size="sm" 
+                                    className="h-6 w-6 p-0 hover:bg-gray-100"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      setSelectedProduct({
+                                        product: firstFund.productName,
+                                        units: units > 0 ? units.toFixed(2) : "0.00",
+                                        price: price > 0 ? `$${price.toFixed(2)}` : "$0.00",
+                                        marketValue: `$${marketValueFormatted}`,
+                                        supplier: firstFund.supplier
+                                      });
+                                      setSelectedPlan({
+                                        shortType: plan.type || "RRSP",
+                                        accountNumber: plan.accountNumber || ""
+                                      });
+                                      setSelectedPlanBalance(planTotal);
+                                      setSelectedFundCompany("");
+                                      setSelectedFundToSwitch("");
+                                      setUnitsToSwitch("");
+                                      setCompanySearchTerm("");
+                                      setFundSearchTerm("");
+                                      setIsSwitchDialogOpen(true);
+                                    }}
+                                  >
+                                    <ArrowLeftRight className="h-3 w-3" />
+                                  </Button>
+                                </div>
+                              );
+                            })()}
+                          </div>
                           <BarChart3 className="h-3.5 w-3.5 cursor-pointer text-gray-700 hover:text-gray-900" />
                           <div className="bg-green-600 p-1 rounded">
                             <DollarSign className="h-3 w-3 text-white" />
