@@ -1726,7 +1726,7 @@ const ClientDetails = () => {
         feeForServiceStartDate: "",
         feeForServiceApproved: false,
       },
-      "RRSP-5678": {
+      "RRSP-5678-2": {
         accountDesignation: "Individual",
         description: "RRSP balanced growth fund",
         intentOfUse: "Balanced retirement growth",
@@ -1942,7 +1942,7 @@ const ClientDetails = () => {
         feeForServiceStartDate: "",
         feeForServiceApproved: false,
       },
-      "RRIF-0123": {
+      "RRIF-0123-3": {
         accountDesignation: "Individual",
         description: "RRIF Canadian equity fund",
         intentOfUse: "Retirement income growth",
@@ -1990,7 +1990,7 @@ const ClientDetails = () => {
         feeForServiceStartDate: "",
         feeForServiceApproved: false,
       },
-      "NR-7890": {
+      "NR-7890-2": {
         accountDesignation: "Individual",
         description: "Non-registered balanced fund",
         intentOfUse: "Balanced taxable growth",
@@ -2062,7 +2062,7 @@ const ClientDetails = () => {
         feeForServiceStartDate: "",
         feeForServiceApproved: false,
       },
-      "RESP-3456": {
+      "RESP-3456-2": {
         accountDesignation: "Individual",
         description: "RESP dividend fund",
         intentOfUse: "Education savings with dividends",
@@ -2182,7 +2182,7 @@ const ClientDetails = () => {
         feeForServiceStartDate: "",
         feeForServiceApproved: false,
       },
-      "TFSA-5678": {
+      "TFSA-5678-2": {
         accountDesignation: "Individual",
         description: "TFSA global equity fund",
         intentOfUse: "Tax-free global growth",
@@ -2206,7 +2206,7 @@ const ClientDetails = () => {
         feeForServiceStartDate: "",
         feeForServiceApproved: false,
       },
-      "RRSP-9012": {
+      "RRSP-9012-2": {
         accountDesignation: "Individual",
         description: "RRSP global growth fund",
         intentOfUse: "Aggressive global growth",
@@ -3714,9 +3714,11 @@ const ClientDetails = () => {
                         </div>
                         <div className="flex items-center gap-2 flex-shrink-0">
                           <div className="flex items-center">
-                            <span className="text-xs font-semibold text-gray-900 mr-96">
-                              ${planTotal.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-                            </span>
+                            <div className="mr-96 p-2 px-4">
+                              <span className="text-xs font-semibold text-gray-900">
+                                ${planTotal.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                              </span>
+                            </div>
                             {(() => {
                               const isZeroBalance = planTotal === 0;
                               const priceStr = firstFund?.currentPrice || "$0.00";
