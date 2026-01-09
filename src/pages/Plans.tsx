@@ -3239,6 +3239,115 @@ export default function Plans() {
                         <TabsContent value="details" className="mt-4">
                           <ScrollArea className="h-[calc(100vh-380px)] pr-2">
                             <div className="space-y-4">
+                          {/* Investment Summary and Trading Actions Tiles */}
+                          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 items-stretch">
+                            {/* Investment Summary Tile */}
+                            <Card className="border border-gray-200 shadow-sm bg-white">
+                              <CardHeader className="pb-3">
+                                <CardTitle className="text-sm font-semibold text-gray-900">Investment Summary</CardTitle>
+                              </CardHeader>
+                              <CardContent className="pt-0 pb-1 space-y-1">
+                                <div className="flex items-center justify-between">
+                                  <span className="text-[9px] text-gray-600">Gross Invested</span>
+                                  <span className="flex-1 border-b border-dotted border-gray-300 mx-2"></span>
+                                  <span className="text-[10px] font-semibold text-gray-900">$425,000</span>
+                                </div>
+                                <div className="flex items-center justify-between">
+                                  <span className="text-[9px] text-gray-600">Net Invested</span>
+                                  <span className="flex-1 border-b border-dotted border-gray-300 mx-2"></span>
+                                  <span className="text-[10px] font-semibold text-gray-900">$410,000</span>
+                                </div>
+                                <div className="flex items-center justify-between">
+                                  <span className="text-[9px] text-gray-600">Net Gain</span>
+                                  <span className="flex-1 border-b border-dotted border-gray-300 mx-2"></span>
+                                  <span className="text-[10px] font-semibold text-green-600">+$38,500</span>
+                                </div>
+                                <div className="flex items-center justify-between">
+                                  <span className="text-[9px] text-gray-600">Rate of Return</span>
+                                  <span className="flex-1 border-b border-dotted border-gray-300 mx-2"></span>
+                                  <span className="text-[10px] font-semibold text-green-600">+7.4%</span>
+                                </div>
+                              </CardContent>
+                            </Card>
+
+                            {/* Trading Actions Tile */}
+                            <Card className="border border-gray-200 shadow-sm bg-white flex flex-col">
+                              <CardContent className="p-6 flex-1 flex items-center justify-center">
+                                <div className="flex items-center justify-center gap-3">
+                                  <Button 
+                                    variant="ghost" 
+                                    size="sm" 
+                                    className="h-8 w-8 p-0 hover:bg-gray-100"
+                                    title="Buy more units"
+                                    onClick={() => {
+                                      if (selectedPlan && selectedPlan.holdings.length > 0) {
+                                        setSelectedHolding({ holding: selectedPlan.holdings[0], plan: selectedPlan });
+                                        setBuyOrderData({
+                                          investmentAmount: "",
+                                          units: "",
+                                          estimatedCost: 0,
+                                          unitsToPurchase: 0,
+                                        });
+                                        setShowBuyUnits(true);
+                                      }
+                                    }}
+                                  >
+                                    <Plus className="h-4 w-4" />
+                                  </Button>
+                                  <Button 
+                                    variant="ghost" 
+                                    size="sm" 
+                                    className="h-8 w-8 p-0 hover:bg-gray-100"
+                                    title="Sell units"
+                                    onClick={() => {
+                                      if (selectedPlan && selectedPlan.holdings.length > 0) {
+                                        setSelectedHolding({ holding: selectedPlan.holdings[0], plan: selectedPlan });
+                                        setSellOrderData({
+                                          units: "",
+                                          dollarAmount: "",
+                                          estimatedProceeds: 0,
+                                          unitsToSell: 0,
+                                        });
+                                        setShowSellUnits(true);
+                                      }
+                                    }}
+                                  >
+                                    <Minus className="h-4 w-4" />
+                                  </Button>
+                                  <Button 
+                                    variant="ghost" 
+                                    size="sm" 
+                                    className="h-8 w-8 p-0 hover:bg-gray-100"
+                                    title="Switch/Conversion"
+                                    onClick={() => {
+                                      if (selectedPlan && selectedPlan.holdings.length > 0) {
+                                        setSelectedHolding({ holding: selectedPlan.holdings[0], plan: selectedPlan });
+                                        setSwitchData({
+                                          units: "",
+                                          selectedCompany: "",
+                                          selectedFund: "",
+                                          selectedFundSymbol: "",
+                                          estimatedValue: 0,
+                                        });
+                                        setConvertData({
+                                          units: "",
+                                          selectedCompany: "",
+                                          selectedFund: "",
+                                          selectedFundSymbol: "",
+                                          estimatedValue: 0,
+                                        });
+                                        setIsConvertMode(false);
+                                        setShowSwitchFund(true);
+                                      }
+                                    }}
+                                  >
+                                    <ArrowLeftRight className="h-4 w-4" />
+                                  </Button>
+                                </div>
+                              </CardContent>
+                            </Card>
+                          </div>
+
                           {/* New Card Above Plan Summary */}
                           <Card className="border border-gray-200 shadow-sm bg-white">
                             <CardHeader className="pb-3">

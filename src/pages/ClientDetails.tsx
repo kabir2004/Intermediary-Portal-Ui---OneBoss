@@ -3523,12 +3523,32 @@ const ClientDetails = () => {
             </CardContent>
           </Card>
 
-          {/* Empty Tile */}
+          {/* Investment Summary Tile */}
           <Card className="border border-gray-200 shadow-sm bg-white col-span-1">
             <CardHeader className="pb-3">
-              <CardTitle className="text-sm font-semibold text-gray-900">Empty Tile</CardTitle>
+              <CardTitle className="text-sm font-semibold text-gray-900">Investment Summary</CardTitle>
             </CardHeader>
-            <CardContent className="pt-0 pb-0">
+            <CardContent className="pt-0 pb-1 space-y-1">
+              <div className="flex items-center justify-between">
+                <span className="text-[9px] text-gray-600">Gross Invested</span>
+                <span className="flex-1 border-b border-dotted border-gray-300 mx-2"></span>
+                <span className="text-[10px] font-semibold text-gray-900">$425,000</span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-[9px] text-gray-600">Net Invested</span>
+                <span className="flex-1 border-b border-dotted border-gray-300 mx-2"></span>
+                <span className="text-[10px] font-semibold text-gray-900">$410,000</span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-[9px] text-gray-600">Net Gain</span>
+                <span className="flex-1 border-b border-dotted border-gray-300 mx-2"></span>
+                <span className="text-[10px] font-semibold text-green-600">+$38,500</span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-[9px] text-gray-600">Rate of Return</span>
+                <span className="flex-1 border-b border-dotted border-gray-300 mx-2"></span>
+                <span className="text-[10px] font-semibold text-green-600">+7.4%</span>
+              </div>
             </CardContent>
           </Card>
 
@@ -6893,9 +6913,38 @@ const ClientDetails = () => {
                       
                       <TabsContent value="summary" className="mt-4">
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                          {/* Trading Actions Tile - Top Left */}
+                          {/* Investment Summary Tile - Top Left */}
                           <Card className="border border-gray-200 shadow-sm bg-white">
-                            <CardContent className="p-4">
+                            <CardHeader className="pb-3">
+                              <CardTitle className="text-sm font-semibold text-gray-900">Investment Summary</CardTitle>
+                            </CardHeader>
+                            <CardContent className="pt-0 pb-1 space-y-1">
+                              <div className="flex items-center justify-between">
+                                <span className="text-[9px] text-gray-600">Gross Invested</span>
+                                <span className="flex-1 border-b border-dotted border-gray-300 mx-2"></span>
+                                <span className="text-[10px] font-semibold text-gray-900">$425,000</span>
+                              </div>
+                              <div className="flex items-center justify-between">
+                                <span className="text-[9px] text-gray-600">Net Invested</span>
+                                <span className="flex-1 border-b border-dotted border-gray-300 mx-2"></span>
+                                <span className="text-[10px] font-semibold text-gray-900">$410,000</span>
+                              </div>
+                              <div className="flex items-center justify-between">
+                                <span className="text-[9px] text-gray-600">Net Gain</span>
+                                <span className="flex-1 border-b border-dotted border-gray-300 mx-2"></span>
+                                <span className="text-[10px] font-semibold text-green-600">+$38,500</span>
+                              </div>
+                              <div className="flex items-center justify-between">
+                                <span className="text-[9px] text-gray-600">Rate of Return</span>
+                                <span className="flex-1 border-b border-dotted border-gray-300 mx-2"></span>
+                                <span className="text-[10px] font-semibold text-green-600">+7.4%</span>
+                              </div>
+                            </CardContent>
+                          </Card>
+
+                          {/* Trading Actions Tile */}
+                          <Card className="border border-gray-200 shadow-sm bg-white flex flex-col">
+                            <CardContent className="flex-1 flex items-center justify-center p-4 min-h-[120px]">
                               <div className="flex items-center justify-center gap-3">
                                 <Button variant="ghost" size="sm" className="h-8 w-8 p-0 hover:bg-gray-100">
                                   <Plus className="h-4 w-4" />
@@ -7798,10 +7847,39 @@ const ClientDetails = () => {
                   </div>
 
                   <TabsContent value="summary" className="mt-4">
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                      {/* Trading Actions Tile - Top Left */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 items-stretch">
+                      {/* Investment Summary Tile - Top Left */}
                       <Card className="border border-gray-200 shadow-sm bg-white">
-                        <CardContent className="p-4">
+                        <CardHeader className="pb-3">
+                          <CardTitle className="text-sm font-semibold text-gray-900">Investment Summary</CardTitle>
+                        </CardHeader>
+                        <CardContent className="pt-0 pb-1 space-y-1">
+                          <div className="flex items-center justify-between">
+                            <span className="text-[9px] text-gray-600">Gross Invested</span>
+                            <span className="flex-1 border-b border-dotted border-gray-300 mx-2"></span>
+                            <span className="text-[10px] font-semibold text-gray-900">$425,000</span>
+                          </div>
+                          <div className="flex items-center justify-between">
+                            <span className="text-[9px] text-gray-600">Net Invested</span>
+                            <span className="flex-1 border-b border-dotted border-gray-300 mx-2"></span>
+                            <span className="text-[10px] font-semibold text-gray-900">$410,000</span>
+                          </div>
+                          <div className="flex items-center justify-between">
+                            <span className="text-[9px] text-gray-600">Net Gain</span>
+                            <span className="flex-1 border-b border-dotted border-gray-300 mx-2"></span>
+                            <span className="text-[10px] font-semibold text-green-600">+$38,500</span>
+                          </div>
+                          <div className="flex items-center justify-between">
+                            <span className="text-[9px] text-gray-600">Rate of Return</span>
+                            <span className="flex-1 border-b border-dotted border-gray-300 mx-2"></span>
+                            <span className="text-[10px] font-semibold text-green-600">+7.4%</span>
+                          </div>
+                        </CardContent>
+                      </Card>
+
+                      {/* Trading Actions Tile */}
+                      <Card className="border border-gray-200 shadow-sm bg-white flex flex-col">
+                        <CardContent className="p-6 flex-1 flex items-center justify-center">
                           <div className="flex items-center justify-center gap-3">
                             <Button variant="ghost" size="sm" className="h-8 w-8 p-0 hover:bg-gray-100">
                               <Plus className="h-4 w-4" />
