@@ -239,6 +239,7 @@ const ClientDetails = () => {
   const [isSellUnitsDialogOpen, setIsSellUnitsDialogOpen] = useState(false);
   const [isSellOrderConfirmedDialogOpen, setIsSellOrderConfirmedDialogOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<any>(null);
+  const [dialogContext, setDialogContext] = useState<"plan" | "fund">("fund");
   const [selectedPlan, setSelectedPlan] = useState<any>(null);
   const [selectedPlanBalance, setSelectedPlanBalance] = useState<number>(0);
   const [investmentAmount, setInvestmentAmount] = useState("200");
@@ -3696,10 +3697,11 @@ const ClientDetails = () => {
                             <span className="text-xs font-semibold text-gray-900 mr-96">
                               ${planTotal.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                             </span>
-                            {firstFund && (() => {
-                              const priceStr = firstFund.currentPrice || "$0.00";
+                            {(() => {
+                              const isZeroBalance = planTotal === 0;
+                              const priceStr = firstFund?.currentPrice || "$0.00";
                               const price = parseFloat(priceStr.replace(/[^0-9.]/g, '')) || 0;
-                              const marketValueNum = parseFloat(firstFund.marketValue.replace(/[^0-9.]/g, '')) || 0;
+                              const marketValueNum = firstFund ? parseFloat(firstFund.marketValue.replace(/[^0-9.]/g, '')) || 0 : 0;
                               const units = price > 0 ? (marketValueNum / price) : 0;
                               const marketValueFormatted = marketValueNum.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
                               
@@ -3711,12 +3713,8 @@ const ClientDetails = () => {
                                     className="h-6 w-6 p-0 hover:bg-gray-100"
                                     onClick={(e) => {
                                       e.stopPropagation();
-                                      setSelectedProduct({
-                                        product: firstFund.productName,
-                                        units: units > 0 ? units.toFixed(2) : "0.00",
-                                        price: price > 0 ? `$${price.toFixed(2)}` : "$0.00",
-                                        marketValue: `$${marketValueFormatted}`
-                                      });
+                                      setDialogContext("plan");
+                                      setSelectedProduct(null);
                                       setSelectedPlan({
                                         shortType: plan.type || "RRSP",
                                         accountNumber: plan.accountNumber || ""
@@ -3735,12 +3733,8 @@ const ClientDetails = () => {
                                     className="h-6 w-6 p-0 hover:bg-gray-100"
                                     onClick={(e) => {
                                       e.stopPropagation();
-                                      setSelectedProduct({
-                                        product: firstFund.productName,
-                                        units: units > 0 ? units.toFixed(2) : "0.00",
-                                        price: price > 0 ? `$${price.toFixed(2)}` : "$0.00",
-                                        marketValue: `$${marketValueFormatted}`
-                                      });
+                                      setDialogContext("plan");
+                                      setSelectedProduct(null);
                                       setSelectedPlan({
                                         shortType: plan.type || "RRSP",
                                         accountNumber: plan.accountNumber || ""
@@ -3759,13 +3753,8 @@ const ClientDetails = () => {
                                     className="h-6 w-6 p-0 hover:bg-gray-100"
                                     onClick={(e) => {
                                       e.stopPropagation();
-                                      setSelectedProduct({
-                                        product: firstFund.productName,
-                                        units: units > 0 ? units.toFixed(2) : "0.00",
-                                        price: price > 0 ? `$${price.toFixed(2)}` : "$0.00",
-                                        marketValue: `$${marketValueFormatted}`,
-                                        supplier: firstFund.supplier
-                                      });
+                                      setDialogContext("plan");
+                                      setSelectedProduct(null);
                                       setSelectedPlan({
                                         shortType: plan.type || "RRSP",
                                         accountNumber: plan.accountNumber || ""
@@ -3872,6 +3861,7 @@ const ClientDetails = () => {
                                             const units = price > 0 ? (marketValueNum / price) : 0;
                                             const planBalance = getPlanTotalValue(planInvestments);
                                             
+                                            setDialogContext("fund");
                                             setSelectedProduct({
                                               product: fund.productName,
                                               units: units > 0 ? units.toFixed(2) : "0.00",
@@ -3902,6 +3892,7 @@ const ClientDetails = () => {
                                             const units = price > 0 ? (marketValueNum / price) : 0;
                                             const planBalance = getPlanTotalValue(planInvestments);
                                             
+                                            setDialogContext("fund");
                                             setSelectedProduct({
                                               product: fund.productName,
                                               units: units > 0 ? units.toFixed(2) : "0.00",
@@ -3932,6 +3923,7 @@ const ClientDetails = () => {
                                             const units = price > 0 ? (marketValueNum / price) : 0;
                                             const planBalance = getPlanTotalValue(planInvestments);
                                             
+                                            setDialogContext("fund");
                                             setSelectedProduct({
                                               product: fund.productName,
                                               units: units > 0 ? units.toFixed(2) : "0.00",
@@ -5930,6 +5922,7 @@ const ClientDetails = () => {
                               const planInvestments = getPlanInvestments(selectedPlanForDetails);
                               const planBalance = getPlanTotalValue(planInvestments);
                               
+                              setDialogContext("fund");
                               setSelectedProduct({
                                 product: "MANULIFE SIMPLICITY MODERATE PORTFOLIO",
                                 units: "150.00",
@@ -5957,6 +5950,7 @@ const ClientDetails = () => {
                               const planInvestments = getPlanInvestments(selectedPlanForDetails);
                               const planBalance = getPlanTotalValue(planInvestments);
                               
+                              setDialogContext("fund");
                               setSelectedProduct({
                                 product: "MANULIFE SIMPLICITY MODERATE PORTFOLIO",
                                 units: "150.00",
@@ -5984,6 +5978,7 @@ const ClientDetails = () => {
                               const planInvestments = getPlanInvestments(selectedPlanForDetails);
                               const planBalance = getPlanTotalValue(planInvestments);
                               
+                              setDialogContext("fund");
                               setSelectedProduct({
                                 product: "MANULIFE SIMPLICITY MODERATE PORTFOLIO",
                                 units: "150.00",
@@ -6038,6 +6033,7 @@ const ClientDetails = () => {
                               const planInvestments = getPlanInvestments(selectedPlanForDetails);
                               const planBalance = getPlanTotalValue(planInvestments);
                               
+                              setDialogContext("fund");
                               setSelectedProduct({
                                 product: "MANULIFE DIVIDEND INCOME FUND",
                                 units: "150.00",
@@ -6065,6 +6061,7 @@ const ClientDetails = () => {
                               const planInvestments = getPlanInvestments(selectedPlanForDetails);
                               const planBalance = getPlanTotalValue(planInvestments);
                               
+                              setDialogContext("fund");
                               setSelectedProduct({
                                 product: "MANULIFE DIVIDEND INCOME FUND",
                                 units: "150.00",
@@ -6092,6 +6089,7 @@ const ClientDetails = () => {
                               const planInvestments = getPlanInvestments(selectedPlanForDetails);
                               const planBalance = getPlanTotalValue(planInvestments);
                               
+                              setDialogContext("fund");
                               setSelectedProduct({
                                 product: "MANULIFE SIMPLICITY MODERATE PORTFOLIO",
                                 units: "150.00",
@@ -10508,173 +10506,230 @@ const ClientDetails = () => {
       {/* Buy More Units Dialog */}
       <Dialog open={isBuyUnitsDialogOpen} onOpenChange={setIsBuyUnitsDialogOpen}>
         <DialogContent className="sm:max-w-[500px]">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2 text-lg">
-              <Plus className="h-5 w-5 text-green-600" />
-              Buy More Units
-            </DialogTitle>
-            <DialogDescription className="text-sm text-gray-600 mt-2">
-              Purchase additional units of {selectedProduct?.product?.split(" Series")[0] || selectedProduct?.product || "Apple Inc."}
-            </DialogDescription>
-          </DialogHeader>
-          <div className="space-y-4 py-4">
-            {/* Account Balance */}
-            <Card className="border border-blue-200 bg-blue-50">
-              <CardContent className="p-4">
-                <div className="flex justify-between items-start mb-2">
-                  <p className="text-xs font-semibold text-gray-700">Account Balance</p>
-                  <p className="text-xs font-semibold text-gray-700">{selectedPlan?.shortType || "RRSP"} CAD</p>
-                </div>
-                <p className="text-2xl font-bold text-gray-900 mb-2">${selectedPlanBalance.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
-                <div className="space-y-1">
-                  <div className="flex justify-between text-xs">
-                    <span className="text-gray-600">Settled:</span>
-                    <span className="text-gray-900 font-medium">${selectedPlanBalance.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
-                  </div>
-                  <div className="flex justify-between text-xs">
-                    <span className="text-gray-600">Unsettled:</span>
-                    <span className="text-gray-900 font-medium">$0.00</span>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Current Holdings */}
-            <div className="space-y-2">
-              <p className="text-sm font-semibold text-gray-900">Current Holdings ({selectedPlan?.shortType || "RRSP"})</p>
-              <div className="grid grid-cols-3 gap-4 text-sm">
-                <div>
-                  <p className="text-xs text-gray-600 mb-1">Units</p>
-                  <p className="text-sm font-medium text-gray-900">
-                    {selectedProduct?.units || "150.00"}
-                  </p>
-                </div>
-                <div>
-                  <p className="text-xs text-gray-600 mb-1">Price</p>
-                  <p className="text-sm font-medium text-gray-900">
-                    {selectedProduct?.price || "$175.50"}
-                  </p>
-                </div>
-                <div>
-                  <p className="text-xs text-gray-600 mb-1">Market Value</p>
-                  <p className="text-sm font-medium text-gray-900">{selectedProduct?.marketValue || "$26,325.00"}</p>
-                </div>
-              </div>
-            </div>
-
-            {/* Investment Input */}
-            <div className="space-y-4">
-              <div>
-                <label className="text-sm font-semibold text-gray-700 mb-2 block">
-                  Investment Amount ($)
-                </label>
-                <Input
-                  type="number"
-                  value={investmentAmount}
-                  onChange={(e) => {
-                    const value = e.target.value;
-                    setInvestmentAmount(value);
-                    if (value && selectedProduct?.price) {
-                      const price = parseFloat(selectedProduct.price.replace("$", "").replace(" Per Unit", ""));
-                      const units = (parseFloat(value) / price).toFixed(4);
-                      setNumberOfUnits(units);
-                    } else {
-                      setNumberOfUnits("");
-                    }
+          {dialogContext === "plan" ? (
+            <>
+              <DialogHeader>
+                <DialogTitle className="flex items-center gap-2 text-lg">
+                  <Plus className="h-5 w-5 text-green-600" />
+                  Buy More Units
+                </DialogTitle>
+                <DialogDescription className="text-[11px] text-gray-600 mt-2 leading-tight">
+                  Provide menu of funds. If user selects an existing fund, reuse account number.
+                </DialogDescription>
+              </DialogHeader>
+              <DialogFooter className="gap-2">
+                <Button
+                  variant="outline"
+                  onClick={() => {
+                    setIsBuyUnitsDialogOpen(false);
+                    setInvestmentAmount("");
+                    setNumberOfUnits("");
                   }}
-                  placeholder="Enter amount to invest"
-                  className="text-lg font-semibold"
-                />
-              </div>
-              <div>
-                <label className="text-sm font-semibold text-gray-700 mb-2 block">
-                  Or Number of Units
-                </label>
-                <Input
-                  type="number"
-                  value={numberOfUnits}
-                  onChange={(e) => {
-                    const value = e.target.value;
-                    setNumberOfUnits(value);
-                    if (value && selectedProduct?.price) {
-                      const price = parseFloat(selectedProduct.price.replace("$", "").replace(" Per Unit", ""));
-                      const amount = (parseFloat(value) * price).toFixed(2);
-                      setInvestmentAmount(amount);
-                    } else {
-                      setInvestmentAmount("");
-                    }
-                  }}
-                  placeholder="Enter number of units"
-                  className="text-lg font-semibold"
-                />
-              </div>
-            </div>
+                >
+                  Cancel
+                </Button>
+              </DialogFooter>
+            </>
+          ) : selectedProduct?.product ? (
+            <>
+              <DialogHeader>
+                <DialogTitle className="flex items-center gap-2 text-lg">
+                  <Plus className="h-5 w-5 text-green-600" />
+                  Buy More Units
+                </DialogTitle>
+                <DialogDescription className="text-sm text-gray-600 mt-2">
+                  Purchase additional units of {selectedProduct.product.split(" Series")[0] || selectedProduct.product}
+                </DialogDescription>
+              </DialogHeader>
+              <div className="space-y-4 py-4">
+                {/* Account Balance */}
+                <Card className="border border-blue-200 bg-blue-50">
+                  <CardContent className="p-4">
+                    <div className="flex justify-between items-start mb-2">
+                      <p className="text-xs font-semibold text-gray-700">Account Balance</p>
+                      <p className="text-xs font-semibold text-gray-700">{selectedPlan?.shortType || "RRSP"} CAD</p>
+                    </div>
+                    <p className="text-2xl font-bold text-gray-900 mb-2">${selectedPlanBalance.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
+                    <div className="space-y-1">
+                      <div className="flex justify-between text-xs">
+                        <span className="text-gray-600">Settled:</span>
+                        <span className="text-gray-900 font-medium">${selectedPlanBalance.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+                      </div>
+                      <div className="flex justify-between text-xs">
+                        <span className="text-gray-600">Unsettled:</span>
+                        <span className="text-gray-900 font-medium">$0.00</span>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
 
-            {/* Estimated Cost */}
-            <Card className="border border-blue-200 bg-blue-50">
-              <CardContent className="p-4">
-                <div className="flex justify-between items-start mb-2">
-                  <p className="text-sm font-semibold text-gray-900">Estimated Cost</p>
-                  <p className="text-2xl font-bold text-gray-900">${investmentAmount ? parseFloat(investmentAmount).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : "0.00"}</p>
-                </div>
-                <div className="space-y-2 text-sm">
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">Units to purchase:</span>
-                    <span className="text-gray-900 font-medium">
-                      {numberOfUnits || (investmentAmount && selectedProduct?.price
-                        ? (
-                            parseFloat(investmentAmount) /
-                            parseFloat(selectedProduct.price.replace("$", "").replace(" Per Unit", ""))
-                          ).toFixed(4)
-                        : "0.0000")}
-                    </span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">Based on avg. cost</span>
-                    <span className="text-gray-900 font-medium">
-                      {selectedProduct?.price || "$175.50"}
-                    </span>
+                {/* Current Holdings */}
+                <div className="space-y-2">
+                  <p className="text-sm font-semibold text-gray-900">Current Holdings ({selectedPlan?.shortType || "RRSP"})</p>
+                  <div className="grid grid-cols-3 gap-4 text-sm">
+                    <div>
+                      <p className="text-xs text-gray-600 mb-1">Units</p>
+                      <p className="text-sm font-medium text-gray-900">
+                        {selectedProduct?.units || "0.00"}
+                      </p>
+                    </div>
+                    <div>
+                      <p className="text-xs text-gray-600 mb-1">Price</p>
+                      <p className="text-sm font-medium text-gray-900">
+                        {selectedProduct?.price || "$0.00"}
+                      </p>
+                    </div>
+                    <div>
+                      <p className="text-xs text-gray-600 mb-1">Market Value</p>
+                      <p className="text-sm font-medium text-gray-900">{selectedProduct?.marketValue || "$0.00"}</p>
+                    </div>
                   </div>
                 </div>
-              </CardContent>
-            </Card>
-          </div>
-          <DialogFooter className="gap-2">
-            <Button
-              variant="outline"
-              onClick={() => {
-                setIsBuyUnitsDialogOpen(false);
-                setInvestmentAmount("200");
-                setNumberOfUnits("");
-              }}
-            >
-              Cancel
-            </Button>
-            <Button
-              className="bg-green-600 hover:bg-green-700 text-white"
-              disabled={!investmentAmount || parseFloat(investmentAmount) <= 0}
-              onClick={() => {
-                const price = selectedProduct?.price ? parseFloat(selectedProduct.price.replace("$", "").replace(" Per Unit", "")) : 175.50;
-                const units = numberOfUnits || (investmentAmount
-                  ? (parseFloat(investmentAmount) / price).toFixed(4)
-                  : "0.0000");
-                
-                setOrderDetails({
-                  product: selectedProduct?.product?.split(" Series")[0] || selectedProduct?.product || "AAPL - Apple Inc.",
-                  units: units,
-                  price: `$${price.toFixed(2)}`,
-                  totalCost: `$${investmentAmount ? parseFloat(investmentAmount).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : "0.00"}`,
-                });
-                
-                setIsBuyUnitsDialogOpen(false);
-                setIsOrderConfirmedDialogOpen(true);
-                setInvestmentAmount("");
-                setNumberOfUnits("");
-              }}
-            >
-              Place Buy Order
-            </Button>
-          </DialogFooter>
+
+                {/* Investment Input */}
+                <div className="space-y-4">
+                  <div>
+                    <label className="text-sm font-semibold text-gray-700 mb-2 block">
+                      Investment Amount ($)
+                    </label>
+                    <Input
+                      type="number"
+                      value={investmentAmount}
+                      onChange={(e) => {
+                        const value = e.target.value;
+                        setInvestmentAmount(value);
+                        if (value && selectedProduct?.price) {
+                          const price = parseFloat(selectedProduct.price.replace("$", "").replace(" Per Unit", ""));
+                          if (price > 0) {
+                            const units = (parseFloat(value) / price).toFixed(4);
+                            setNumberOfUnits(units);
+                          } else {
+                            setNumberOfUnits("");
+                          }
+                        } else {
+                          setNumberOfUnits("");
+                        }
+                      }}
+                      placeholder="Enter amount to invest"
+                      className="text-lg font-semibold"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-sm font-semibold text-gray-700 mb-2 block">
+                      Or Number of Units
+                    </label>
+                    <Input
+                      type="number"
+                      value={numberOfUnits}
+                      onChange={(e) => {
+                        const value = e.target.value;
+                        setNumberOfUnits(value);
+                        if (value && selectedProduct?.price) {
+                          const price = parseFloat(selectedProduct.price.replace("$", "").replace(" Per Unit", ""));
+                          if (price > 0) {
+                            const amount = (parseFloat(value) * price).toFixed(2);
+                            setInvestmentAmount(amount);
+                          } else {
+                            setInvestmentAmount("");
+                          }
+                        } else {
+                          setInvestmentAmount("");
+                        }
+                      }}
+                      placeholder="Enter number of units"
+                      className="text-lg font-semibold"
+                    />
+                  </div>
+                </div>
+
+                {/* Estimated Cost */}
+                <Card className="border border-blue-200 bg-blue-50">
+                  <CardContent className="p-4">
+                    <div className="flex justify-between items-start mb-2">
+                      <p className="text-sm font-semibold text-gray-900">Estimated Cost</p>
+                      <p className="text-2xl font-bold text-gray-900">${investmentAmount ? parseFloat(investmentAmount).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : "0.00"}</p>
+                    </div>
+                    <div className="space-y-2 text-sm">
+                      <div className="flex justify-between">
+                        <span className="text-gray-600">Units to purchase:</span>
+                        <span className="text-gray-900 font-medium">
+                          {numberOfUnits || (investmentAmount && selectedProduct?.price
+                            ? (() => {
+                                const price = parseFloat(selectedProduct.price.replace("$", "").replace(" Per Unit", ""));
+                                return price > 0 ? (parseFloat(investmentAmount) / price).toFixed(4) : "0.0000";
+                              })()
+                            : "0.0000")}
+                        </span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-gray-600">Based on avg. cost</span>
+                        <span className="text-gray-900 font-medium">
+                          {selectedProduct?.price || "$0.00"}
+                        </span>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+              <DialogFooter className="gap-2">
+                <Button
+                  variant="outline"
+                  onClick={() => {
+                    setIsBuyUnitsDialogOpen(false);
+                    setInvestmentAmount("200");
+                    setNumberOfUnits("");
+                  }}
+                >
+                  Cancel
+                </Button>
+                <Button
+                  className="bg-green-600 hover:bg-green-700 text-white"
+                  disabled={!investmentAmount || parseFloat(investmentAmount) <= 0}
+                  onClick={() => {
+                    const price = selectedProduct?.price ? parseFloat(selectedProduct.price.replace("$", "").replace(" Per Unit", "")) : 0;
+                    const units = numberOfUnits || (investmentAmount && price > 0
+                      ? (parseFloat(investmentAmount) / price).toFixed(4)
+                      : "0.0000");
+                    
+                    setOrderDetails({
+                      product: selectedProduct?.product?.split(" Series")[0] || selectedProduct?.product || "",
+                      units: units,
+                      price: `$${price.toFixed(2)}`,
+                      totalCost: `$${investmentAmount ? parseFloat(investmentAmount).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : "0.00"}`,
+                    });
+                    
+                    setIsBuyUnitsDialogOpen(false);
+                    setIsOrderConfirmedDialogOpen(true);
+                    setInvestmentAmount("");
+                    setNumberOfUnits("");
+                  }}
+                >
+                  Place Buy Order
+                </Button>
+              </DialogFooter>
+            </>
+          ) : (
+            <>
+              <DialogHeader>
+                <DialogTitle className="flex items-center gap-2 text-lg">
+                  <Plus className="h-5 w-5 text-green-600" />
+                  Buy More Units
+                </DialogTitle>
+              </DialogHeader>
+              <DialogFooter className="gap-2">
+                <Button
+                  variant="outline"
+                  onClick={() => {
+                    setIsBuyUnitsDialogOpen(false);
+                    setInvestmentAmount("");
+                    setNumberOfUnits("");
+                  }}
+                >
+                  Cancel
+                </Button>
+              </DialogFooter>
+            </>
+          )}
         </DialogContent>
       </Dialog>
 
@@ -10700,7 +10755,7 @@ const ClientDetails = () => {
                   <div>
                     <p className="text-xs text-gray-500 mb-1">Product</p>
                     <p className="text-sm font-semibold text-gray-900">
-                      {orderDetails?.product || "AAPL - Apple Inc."}
+                      {orderDetails?.product || ""}
                     </p>
                   </div>
                   <div className="border-t border-gray-200 pt-3">
@@ -10742,16 +10797,42 @@ const ClientDetails = () => {
       {/* Sell Units Dialog */}
       <Dialog open={isSellUnitsDialogOpen} onOpenChange={setIsSellUnitsDialogOpen}>
         <DialogContent className="sm:max-w-[500px]">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2 text-lg text-red-600">
-              <Minus className="h-5 w-5 text-red-600" />
-              Sell Units
-            </DialogTitle>
-            <DialogDescription className="text-sm text-gray-600 mt-2">
-              Sell units of {selectedProduct?.product?.split(" Series")[0] || selectedProduct?.product || "Apple Inc."}
-            </DialogDescription>
-          </DialogHeader>
-          <div className="space-y-4 py-4">
+          {dialogContext === "plan" ? (
+            <>
+              <DialogHeader>
+                <DialogTitle className="flex items-center gap-2 text-lg text-red-600">
+                  <Minus className="h-5 w-5 text-red-600" />
+                  Sell Units
+                </DialogTitle>
+                <DialogDescription className="text-[11px] text-gray-600 mt-2 leading-tight">
+                  Provide menu of funds. If user selects an existing fund, reuse account number.
+                </DialogDescription>
+              </DialogHeader>
+              <DialogFooter className="gap-2">
+                <Button
+                  variant="outline"
+                  onClick={() => {
+                    setIsSellUnitsDialogOpen(false);
+                    setSellUnits("");
+                    setSellDollarAmount("");
+                  }}
+                >
+                  Cancel
+                </Button>
+              </DialogFooter>
+            </>
+          ) : selectedProduct?.product ? (
+            <>
+              <DialogHeader>
+                <DialogTitle className="flex items-center gap-2 text-lg text-red-600">
+                  <Minus className="h-5 w-5 text-red-600" />
+                  Sell Units
+                </DialogTitle>
+                <DialogDescription className="text-sm text-gray-600 mt-2">
+                  Sell units of {selectedProduct.product.split(" Series")[0] || selectedProduct.product}
+                </DialogDescription>
+              </DialogHeader>
+              <div className="space-y-4 py-4">
             {/* Current Holdings */}
             <div className="space-y-2">
               <p className="text-sm font-semibold text-gray-900">Current Holdings ({selectedPlan?.shortType || "RRSP"})</p>
@@ -10881,53 +10962,76 @@ const ClientDetails = () => {
                 </div>
               </CardContent>
             </Card>
-          </div>
-          <DialogFooter className="gap-2">
-            <Button
-              variant="outline"
-              onClick={() => {
-                setIsSellUnitsDialogOpen(false);
-                setSellUnits("200");
-                setSellDollarAmount("");
-              }}
-            >
-              Cancel
-            </Button>
-            <Button
-              className="bg-red-600 hover:bg-red-700 text-white"
-              disabled={!sellUnits || parseFloat(sellUnits) <= 0}
-              onClick={() => {
-                const price = selectedProduct?.price ? parseFloat(selectedProduct.price.replace("$", "").replace(" Per Unit", "")) : 175.50;
-                const units = sellUnits || (sellDollarAmount
-                  ? (parseFloat(sellDollarAmount) / price).toFixed(4)
-                  : "0.0000");
-                const proceeds = sellDollarAmount || (sellUnits
-                  ? (parseFloat(sellUnits) * price).toFixed(2)
-                  : "0.00");
-                
-                const productName = selectedProduct?.product || "Apple Inc.";
-                const displayProductName = productName.includes(" - ") 
-                  ? productName 
-                  : productName.includes("AAPL") || productName.toLowerCase().includes("apple")
-                    ? `AAPL - ${productName.split(" Series")[0]}`
-                    : productName.split(" Series")[0] || productName;
-                
-                setSellOrderDetails({
-                  product: displayProductName,
-                  units: units,
-                  price: `$${price.toFixed(2)}`,
-                  totalProceeds: `$${parseFloat(proceeds).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
-                });
-                
-                setIsSellUnitsDialogOpen(false);
-                setIsSellOrderConfirmedDialogOpen(true);
-                setSellUnits("");
-                setSellDollarAmount("");
-              }}
-            >
-              Place Sell Order
-            </Button>
-          </DialogFooter>
+              </div>
+              <DialogFooter className="gap-2">
+                <Button
+                  variant="outline"
+                  onClick={() => {
+                    setIsSellUnitsDialogOpen(false);
+                    setSellUnits("200");
+                    setSellDollarAmount("");
+                  }}
+                >
+                  Cancel
+                </Button>
+                <Button
+                  className="bg-red-600 hover:bg-red-700 text-white"
+                  disabled={!sellUnits || parseFloat(sellUnits) <= 0}
+                  onClick={() => {
+                    const price = selectedProduct?.price ? parseFloat(selectedProduct.price.replace("$", "").replace(" Per Unit", "")) : 175.50;
+                    const units = sellUnits || (sellDollarAmount
+                      ? (parseFloat(sellDollarAmount) / price).toFixed(4)
+                      : "0.0000");
+                    const proceeds = sellDollarAmount || (sellUnits
+                      ? (parseFloat(sellUnits) * price).toFixed(2)
+                      : "0.00");
+                    
+                    const productName = selectedProduct?.product || "Apple Inc.";
+                    const displayProductName = productName.includes(" - ") 
+                      ? productName 
+                      : productName.includes("AAPL") || productName.toLowerCase().includes("apple")
+                        ? `AAPL - ${productName.split(" Series")[0]}`
+                        : productName.split(" Series")[0] || productName;
+                    
+                    setSellOrderDetails({
+                      product: displayProductName,
+                      units: units,
+                      price: `$${price.toFixed(2)}`,
+                      totalProceeds: `$${parseFloat(proceeds).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
+                    });
+                    
+                    setIsSellUnitsDialogOpen(false);
+                    setIsSellOrderConfirmedDialogOpen(true);
+                    setSellUnits("");
+                    setSellDollarAmount("");
+                  }}
+                >
+                  Place Sell Order
+                </Button>
+              </DialogFooter>
+            </>
+          ) : (
+            <>
+              <DialogHeader>
+                <DialogTitle className="flex items-center gap-2 text-lg text-red-600">
+                  <Minus className="h-5 w-5 text-red-600" />
+                  Sell Units
+                </DialogTitle>
+              </DialogHeader>
+              <DialogFooter className="gap-2">
+                <Button
+                  variant="outline"
+                  onClick={() => {
+                    setIsSellUnitsDialogOpen(false);
+                    setSellUnits("");
+                    setSellDollarAmount("");
+                  }}
+                >
+                  Cancel
+                </Button>
+              </DialogFooter>
+            </>
+          )}
         </DialogContent>
       </Dialog>
 
@@ -10995,14 +11099,41 @@ const ClientDetails = () => {
       {/* Switch/Convert Fund Dialog */}
       <Dialog open={isSwitchDialogOpen} onOpenChange={setIsSwitchDialogOpen}>
         <DialogContent className="sm:max-w-[500px]">
-          {(() => {
+          {dialogContext === "plan" ? (
+            <>
+              <DialogHeader>
+                <DialogTitle className="flex items-center gap-2 text-lg text-blue-600">
+                  <ArrowLeftRight className="h-5 w-5 text-blue-600" />
+                  Switch Fund
+                </DialogTitle>
+                <DialogDescription className="text-[11px] text-gray-600 mt-2 leading-tight">
+                  Provide menu of funds. If user selects an existing fund, reuse account number.
+                </DialogDescription>
+              </DialogHeader>
+              <DialogFooter className="gap-2">
+                <Button
+                  variant="outline"
+                  onClick={() => {
+                    setIsSwitchDialogOpen(false);
+                    setSelectedFundCompany("");
+                    setSelectedFundToSwitch("");
+                    setUnitsToSwitch("");
+                    setCompanySearchTerm("");
+                    setFundSearchTerm("");
+                  }}
+                >
+                  Cancel
+                </Button>
+              </DialogFooter>
+            </>
+          ) : selectedProduct?.product ? (() => {
             const currentProductCompany = getProductCompany(selectedProduct);
             const isSwitch = selectedFundCompany ? selectedFundCompany === currentProductCompany : true;
             const isConvert = selectedFundCompany && selectedFundCompany !== currentProductCompany;
             const titleText = isConvert ? "Convert Fund" : "Switch Fund";
             const descriptionText = isConvert 
-              ? `Convert from ${selectedProduct?.product?.split(" Series")[0] || "FIDELITY NORTHSTAR FUND"} (${currentProductCompany}) to a ${selectedFundCompany || ""} fund.`
-              : `Switch from ${selectedProduct?.product?.split(" Series")[0] || "FIDELITY NORTHSTAR FUND"} to another ${currentProductCompany} fund.`;
+              ? `Convert from ${selectedProduct.product.split(" Series")[0] || "FIDELITY NORTHSTAR FUND"} (${currentProductCompany}) to a ${selectedFundCompany || ""} fund.`
+              : `Switch from ${selectedProduct.product.split(" Series")[0] || "FIDELITY NORTHSTAR FUND"} to another ${currentProductCompany} fund.`;
             
             return (
               <>
@@ -11276,7 +11407,31 @@ const ClientDetails = () => {
           </DialogFooter>
               </>
             );
-          })()}
+          })() : (
+            <>
+              <DialogHeader>
+                <DialogTitle className="flex items-center gap-2 text-lg text-blue-600">
+                  <ArrowLeftRight className="h-5 w-5 text-blue-600" />
+                  Switch Fund
+                </DialogTitle>
+              </DialogHeader>
+              <DialogFooter className="gap-2">
+                <Button
+                  variant="outline"
+                  onClick={() => {
+                    setIsSwitchDialogOpen(false);
+                    setSelectedFundCompany("");
+                    setSelectedFundToSwitch("");
+                    setUnitsToSwitch("");
+                    setCompanySearchTerm("");
+                    setFundSearchTerm("");
+                  }}
+                >
+                  Cancel
+                </Button>
+              </DialogFooter>
+            </>
+          )}
         </DialogContent>
       </Dialog>
 
