@@ -227,6 +227,7 @@ const ClientDetails = () => {
   const [selectedPlanForDetails, setSelectedPlanForDetails] = useState<string | null>(null);
   const [selectedFundAccount, setSelectedFundAccount] = useState<string | null>(null);
   const [fundAccountAllocationsView, setFundAccountAllocationsView] = useState<"chart" | "table">("chart");
+  const [fundAccountDetailTab, setFundAccountDetailTab] = useState("summary");
   const [transactionsDisplayOption, setTransactionsDisplayOption] = useState("All");
   const [transactionsSortBy, setTransactionsSortBy] = useState("Sort by Trade Date");
   const [selectedAccountFilter, setSelectedAccountFilter] = useState("Selected Account");
@@ -3634,12 +3635,115 @@ const ClientDetails = () => {
             </CardContent>
           </Card>
 
-          {/* Empty Tile */}
-          <Card className="border border-gray-200 shadow-sm bg-white">
-            <CardHeader className="pb-3">
-              <CardTitle className="text-sm font-semibold text-gray-900">Empty Tile</CardTitle>
+          {/* Allocations Overview Tile */}
+          <Card className="border border-gray-200 shadow-sm bg-white col-span-1">
+            <CardHeader className="pb-2">
+              <CardTitle className="text-sm font-semibold text-gray-900">Allocations</CardTitle>
             </CardHeader>
-            <CardContent className="pt-0 pb-0">
+            <CardContent className="pt-0 pb-2">
+              <div className="grid grid-cols-3 gap-2">
+                {/* Asset Allocation Mini Chart */}
+                <div 
+                  className="cursor-pointer hover:opacity-80 transition-opacity"
+                  onClick={() => {
+                    setChartsSubTab("allocations");
+                    setClientViewTab("charts");
+                  }}
+                  title="Asset Allocation"
+                >
+                  <ResponsiveContainer width="100%" height={60}>
+                    <PieChart>
+                      <Pie
+                        data={[
+                          { name: "Equity", value: 45 },
+                          { name: "Bonds", value: 30 },
+                          { name: "Cash", value: 15 },
+                          { name: "Other", value: 10 },
+                        ]}
+                        cx="50%"
+                        cy="50%"
+                        outerRadius={25}
+                        fill="#8884d8"
+                        dataKey="value"
+                      >
+                        <Cell fill="#3b82f6" />
+                        <Cell fill="#22c55e" />
+                        <Cell fill="#eab308" />
+                        <Cell fill="#6b7280" />
+                      </Pie>
+                    </PieChart>
+                  </ResponsiveContainer>
+                  <p className="text-[8px] text-gray-600 text-center mt-0.5">Asset</p>
+                </div>
+
+                {/* Geographic Allocation Mini Chart */}
+                <div 
+                  className="cursor-pointer hover:opacity-80 transition-opacity"
+                  onClick={() => {
+                    setChartsSubTab("allocations");
+                    setClientViewTab("charts");
+                  }}
+                  title="Geographic Allocation"
+                >
+                  <ResponsiveContainer width="100%" height={60}>
+                    <PieChart>
+                      <Pie
+                        data={[
+                          { name: "North America", value: 50 },
+                          { name: "Europe", value: 25 },
+                          { name: "Asia", value: 15 },
+                          { name: "Other", value: 10 },
+                        ]}
+                        cx="50%"
+                        cy="50%"
+                        outerRadius={25}
+                        fill="#8884d8"
+                        dataKey="value"
+                      >
+                        <Cell fill="#3b82f6" />
+                        <Cell fill="#22c55e" />
+                        <Cell fill="#eab308" />
+                        <Cell fill="#6b7280" />
+                      </Pie>
+                    </PieChart>
+                  </ResponsiveContainer>
+                  <p className="text-[8px] text-gray-600 text-center mt-0.5">Geographic</p>
+                </div>
+
+                {/* Sector Allocation Mini Chart */}
+                <div 
+                  className="cursor-pointer hover:opacity-80 transition-opacity"
+                  onClick={() => {
+                    setChartsSubTab("allocations");
+                    setClientViewTab("charts");
+                  }}
+                  title="Sector Allocation"
+                >
+                  <ResponsiveContainer width="100%" height={60}>
+                    <PieChart>
+                      <Pie
+                        data={[
+                          { name: "Technology", value: 30 },
+                          { name: "Financial", value: 25 },
+                          { name: "Healthcare", value: 20 },
+                          { name: "Other", value: 25 },
+                        ]}
+                        cx="50%"
+                        cy="50%"
+                        outerRadius={25}
+                        fill="#8884d8"
+                        dataKey="value"
+                      >
+                        <Cell fill="#3b82f6" />
+                        <Cell fill="#22c55e" />
+                        <Cell fill="#eab308" />
+                        <Cell fill="#6b7280" />
+                      </Pie>
+                    </PieChart>
+                  </ResponsiveContainer>
+                  <p className="text-[8px] text-gray-600 text-center mt-0.5">Sector</p>
+                </div>
+              </div>
             </CardContent>
           </Card>
 
@@ -6420,7 +6524,150 @@ const ClientDetails = () => {
                       </div>
                       
                       <TabsContent value="summary" className="mt-4">
-                        {/* Summary content - empty for now */}
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 items-stretch">
+                          {/* Investment Summary Tile - Row 1, Col 1 */}
+                          <Card className="border border-gray-200 shadow-sm bg-white">
+                            <CardHeader className="pb-3">
+                              <CardTitle className="text-sm font-semibold text-gray-900">Investment Summary</CardTitle>
+                            </CardHeader>
+                            <CardContent className="pt-0 pb-1 space-y-1">
+                              <div className="flex items-center justify-between">
+                                <span className="text-[9px] text-gray-600">Gross Invested</span>
+                                <span className="flex-1 border-b border-dotted border-gray-300 mx-2"></span>
+                                <span className="text-[10px] font-semibold text-gray-900">$425,000</span>
+                              </div>
+                              <div className="flex items-center justify-between">
+                                <span className="text-[9px] text-gray-600">Net Invested</span>
+                                <span className="flex-1 border-b border-dotted border-gray-300 mx-2"></span>
+                                <span className="text-[10px] font-semibold text-gray-900">$410,000</span>
+                              </div>
+                              <div className="flex items-center justify-between">
+                                <span className="text-[9px] text-gray-600">Net Gain</span>
+                                <span className="flex-1 border-b border-dotted border-gray-300 mx-2"></span>
+                                <span className="text-[10px] font-semibold text-green-600">+$38,500</span>
+                              </div>
+                              <div className="flex items-center justify-between">
+                                <span className="text-[9px] text-gray-600">Rate of Return</span>
+                                <span className="flex-1 border-b border-dotted border-gray-300 mx-2"></span>
+                                <span className="text-[10px] font-semibold text-green-600">+7.4%</span>
+                              </div>
+                            </CardContent>
+                          </Card>
+
+                          {/* Asset Allocation Tile - Row 1, Col 2 */}
+                          <Card 
+                            className="border border-gray-200 shadow-sm bg-white cursor-pointer hover:shadow-md transition-shadow"
+                            onClick={() => {
+                              // Navigate to allocations tab - placeholder for now
+                              console.log("Navigate to Asset Allocation");
+                            }}
+                          >
+                            <CardHeader className="pb-2">
+                              <CardTitle className="text-sm font-semibold text-gray-900">Asset Allocation</CardTitle>
+                            </CardHeader>
+                            <CardContent className="pt-0 pb-2">
+                              <ResponsiveContainer width="100%" height={120}>
+                                <PieChart>
+                                  <Pie
+                                    data={[
+                                      { name: "Equity", value: 45 },
+                                      { name: "Bonds", value: 30 },
+                                      { name: "Cash", value: 15 },
+                                      { name: "Other", value: 10 },
+                                    ]}
+                                    cx="50%"
+                                    cy="50%"
+                                    outerRadius={50}
+                                    fill="#8884d8"
+                                    dataKey="value"
+                                  >
+                                    <Cell fill="#3b82f6" />
+                                    <Cell fill="#22c55e" />
+                                    <Cell fill="#eab308" />
+                                    <Cell fill="#6b7280" />
+                                  </Pie>
+                                  <RechartsTooltip formatter={(value: number) => `${value}%`} />
+                                </PieChart>
+                              </ResponsiveContainer>
+                            </CardContent>
+                          </Card>
+
+                          {/* Geographic Allocation Tile - Row 1, Col 3 */}
+                          <Card 
+                            className="border border-gray-200 shadow-sm bg-white cursor-pointer hover:shadow-md transition-shadow"
+                            onClick={() => {
+                              // Navigate to allocations tab - placeholder for now
+                              console.log("Navigate to Geographic Allocation");
+                            }}
+                          >
+                            <CardHeader className="pb-2">
+                              <CardTitle className="text-sm font-semibold text-gray-900">Geographic Allocation</CardTitle>
+                            </CardHeader>
+                            <CardContent className="pt-0 pb-2">
+                              <ResponsiveContainer width="100%" height={120}>
+                                <PieChart>
+                                  <Pie
+                                    data={[
+                                      { name: "North America", value: 50 },
+                                      { name: "Europe", value: 25 },
+                                      { name: "Asia", value: 15 },
+                                      { name: "Other", value: 10 },
+                                    ]}
+                                    cx="50%"
+                                    cy="50%"
+                                    outerRadius={50}
+                                    fill="#8884d8"
+                                    dataKey="value"
+                                  >
+                                    <Cell fill="#3b82f6" />
+                                    <Cell fill="#22c55e" />
+                                    <Cell fill="#eab308" />
+                                    <Cell fill="#6b7280" />
+                                  </Pie>
+                                  <RechartsTooltip formatter={(value: number) => `${value}%`} />
+                                </PieChart>
+                              </ResponsiveContainer>
+                            </CardContent>
+                          </Card>
+
+                          {/* Sector Allocation Tile - Row 1, Col 4 */}
+                          <Card 
+                            className="border border-gray-200 shadow-sm bg-white cursor-pointer hover:shadow-md transition-shadow"
+                            onClick={() => {
+                              // Navigate to allocations tab - placeholder for now
+                              console.log("Navigate to Sector Allocation");
+                            }}
+                          >
+                            <CardHeader className="pb-2">
+                              <CardTitle className="text-sm font-semibold text-gray-900">Sector Allocation</CardTitle>
+                            </CardHeader>
+                            <CardContent className="pt-0 pb-2">
+                              <ResponsiveContainer width="100%" height={120}>
+                                <PieChart>
+                                  <Pie
+                                    data={[
+                                      { name: "Technology", value: 30 },
+                                      { name: "Financial", value: 25 },
+                                      { name: "Healthcare", value: 20 },
+                                      { name: "Other", value: 25 },
+                                    ]}
+                                    cx="50%"
+                                    cy="50%"
+                                    outerRadius={50}
+                                    fill="#8884d8"
+                                    dataKey="value"
+                                  >
+                                    <Cell fill="#3b82f6" />
+                                    <Cell fill="#22c55e" />
+                                    <Cell fill="#eab308" />
+                                    <Cell fill="#6b7280" />
+                                  </Pie>
+                                  <RechartsTooltip formatter={(value: number) => `${value}%`} />
+                                </PieChart>
+                              </ResponsiveContainer>
+                            </CardContent>
+                          </Card>
+                        </div>
                       </TabsContent>
                       
                       <TabsContent value="details" className="mt-4">
@@ -6884,7 +7131,7 @@ const ClientDetails = () => {
                 ) : selectedFundAccountData ? (
                   /* Fund Account Details */
                   <div className="space-y-4">
-                    <Tabs defaultValue="summary">
+                    <Tabs value={fundAccountDetailTab} onValueChange={(value) => setFundAccountDetailTab(value)}>
                       <div className="w-full overflow-x-auto overflow-y-visible mb-4 min-w-0">
                         <TabsList className="inline-flex h-auto p-1 gap-6 min-w-full w-max">
                           <TabsTrigger value="summary" className="text-xs whitespace-nowrap flex-shrink-0">Summary</TabsTrigger>
@@ -6914,8 +7161,8 @@ const ClientDetails = () => {
                       </div>
                       
                       <TabsContent value="summary" className="mt-4">
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                          {/* Investment Summary Tile - Top Left */}
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                          {/* Investment Summary Tile - Row 1, Col 1 */}
                           <Card className="border border-gray-200 shadow-sm bg-white">
                             <CardHeader className="pb-3">
                               <CardTitle className="text-sm font-semibold text-gray-900">Investment Summary</CardTitle>
@@ -6944,17 +7191,158 @@ const ClientDetails = () => {
                             </CardContent>
                           </Card>
 
+                          {/* Asset Allocation Tile - Row 1, Col 2 */}
+                          <Card 
+                            className="border border-gray-200 shadow-sm bg-white cursor-pointer hover:shadow-md transition-shadow"
+                            onClick={() => {
+                              setFundAccountDetailTab("allocations");
+                            }}
+                          >
+                            <CardHeader className="pb-2">
+                              <CardTitle className="text-sm font-semibold text-gray-900">Asset Allocation</CardTitle>
+                            </CardHeader>
+                            <CardContent className="pt-0 pb-2">
+                              <ResponsiveContainer width="100%" height={120}>
+                                <PieChart>
+                                  <Pie
+                                    data={[
+                                      { name: "Equity", value: 45 },
+                                      { name: "Bonds", value: 30 },
+                                      { name: "Cash", value: 15 },
+                                      { name: "Other", value: 10 },
+                                    ]}
+                                    cx="50%"
+                                    cy="50%"
+                                    outerRadius={50}
+                                    fill="#8884d8"
+                                    dataKey="value"
+                                  >
+                                    <Cell fill="#3b82f6" />
+                                    <Cell fill="#22c55e" />
+                                    <Cell fill="#eab308" />
+                                    <Cell fill="#6b7280" />
+                                  </Pie>
+                                  <RechartsTooltip formatter={(value: number) => `${value}%`} />
+                                </PieChart>
+                              </ResponsiveContainer>
+                            </CardContent>
+                          </Card>
+
+                          {/* Geographic Allocation Tile - Row 1, Col 3 */}
+                          <Card 
+                            className="border border-gray-200 shadow-sm bg-white cursor-pointer hover:shadow-md transition-shadow"
+                            onClick={() => {
+                              setFundAccountDetailTab("allocations");
+                            }}
+                          >
+                            <CardHeader className="pb-2">
+                              <CardTitle className="text-sm font-semibold text-gray-900">Geographic Allocation</CardTitle>
+                            </CardHeader>
+                            <CardContent className="pt-0 pb-2">
+                              <ResponsiveContainer width="100%" height={120}>
+                                <PieChart>
+                                  <Pie
+                                    data={[
+                                      { name: "North America", value: 50 },
+                                      { name: "Europe", value: 25 },
+                                      { name: "Asia", value: 15 },
+                                      { name: "Other", value: 10 },
+                                    ]}
+                                    cx="50%"
+                                    cy="50%"
+                                    outerRadius={50}
+                                    fill="#8884d8"
+                                    dataKey="value"
+                                  >
+                                    <Cell fill="#3b82f6" />
+                                    <Cell fill="#22c55e" />
+                                    <Cell fill="#eab308" />
+                                    <Cell fill="#6b7280" />
+                                  </Pie>
+                                  <RechartsTooltip formatter={(value: number) => `${value}%`} />
+                                </PieChart>
+                              </ResponsiveContainer>
+                            </CardContent>
+                          </Card>
+
+                          {/* Sector Allocation Tile - Row 1, Col 4 */}
+                          <Card 
+                            className="border border-gray-200 shadow-sm bg-white cursor-pointer hover:shadow-md transition-shadow"
+                            onClick={() => {
+                              setFundAccountDetailTab("allocations");
+                            }}
+                          >
+                            <CardHeader className="pb-2">
+                              <CardTitle className="text-sm font-semibold text-gray-900">Sector Allocation</CardTitle>
+                            </CardHeader>
+                            <CardContent className="pt-0 pb-2">
+                              <ResponsiveContainer width="100%" height={120}>
+                                <PieChart>
+                                  <Pie
+                                    data={[
+                                      { name: "Technology", value: 30 },
+                                      { name: "Financial", value: 25 },
+                                      { name: "Healthcare", value: 20 },
+                                      { name: "Other", value: 25 },
+                                    ]}
+                                    cx="50%"
+                                    cy="50%"
+                                    outerRadius={50}
+                                    fill="#8884d8"
+                                    dataKey="value"
+                                  >
+                                    <Cell fill="#3b82f6" />
+                                    <Cell fill="#22c55e" />
+                                    <Cell fill="#eab308" />
+                                    <Cell fill="#6b7280" />
+                                  </Pie>
+                                  <RechartsTooltip formatter={(value: number) => `${value}%`} />
+                                </PieChart>
+                              </ResponsiveContainer>
+                            </CardContent>
+                          </Card>
+                        </div>
+
+                        {/* Second Row - Trading Actions Tile */}
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 items-stretch mt-4">
                           {/* Trading Actions Tile */}
                           <Card className="border border-gray-200 shadow-sm bg-white flex flex-col">
-                            <CardContent className="flex-1 flex items-center justify-center p-4 min-h-[120px]">
+                            <CardContent className="p-6 flex-1 flex items-center justify-center">
                               <div className="flex items-center justify-center gap-3">
-                                <Button variant="ghost" size="sm" className="h-8 w-8 p-0 hover:bg-gray-100">
+                                <Button 
+                                  variant="ghost" 
+                                  size="sm" 
+                                  className="h-8 w-8 p-0 hover:bg-gray-100"
+                                  title="Buy more units"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    // Add buy action handler here
+                                  }}
+                                >
                                   <Plus className="h-4 w-4" />
                                 </Button>
-                                <Button variant="ghost" size="sm" className="h-8 w-8 p-0 hover:bg-gray-100">
+                                <Button 
+                                  variant="ghost" 
+                                  size="sm" 
+                                  className="h-8 w-8 p-0 hover:bg-gray-100"
+                                  title="Sell units"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    // Add sell action handler here
+                                  }}
+                                >
                                   <Minus className="h-4 w-4" />
                                 </Button>
-                                <Button variant="ghost" size="sm" className="h-8 w-8 p-0 hover:bg-gray-100">
+                                <Button 
+                                  variant="ghost" 
+                                  size="sm" 
+                                  className="h-8 w-8 p-0 hover:bg-gray-100"
+                                  title="Switch/Conversion"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    // Add switch action handler here
+                                  }}
+                                >
                                   <ArrowLeftRight className="h-4 w-4" />
                                 </Button>
                               </div>
@@ -7849,8 +8237,8 @@ const ClientDetails = () => {
                   </div>
 
                   <TabsContent value="summary" className="mt-4">
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 items-stretch">
-                      {/* Investment Summary Tile - Top Left */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 items-stretch">
+                      {/* Investment Summary Tile - Row 1, Col 1 */}
                       <Card className="border border-gray-200 shadow-sm bg-white">
                         <CardHeader className="pb-3">
                           <CardTitle className="text-sm font-semibold text-gray-900">Investment Summary</CardTitle>
@@ -7879,20 +8267,243 @@ const ClientDetails = () => {
                         </CardContent>
                       </Card>
 
+                      {/* Asset Allocation Tile - Row 1, Col 2 */}
+                      <Card 
+                        className="border border-gray-200 shadow-sm bg-white cursor-pointer hover:shadow-md transition-shadow"
+                        onClick={() => {
+                          setPlanDetailTab("details");
+                          setPlanDetailsSubTab("allocations");
+                        }}
+                      >
+                        <CardHeader className="pb-2">
+                          <CardTitle className="text-sm font-semibold text-gray-900">Asset Allocation</CardTitle>
+                        </CardHeader>
+                        <CardContent className="pt-0 pb-2">
+                          <ResponsiveContainer width="100%" height={120}>
+                            <PieChart>
+                              <Pie
+                                data={[
+                                  { name: "Equity", value: 45 },
+                                  { name: "Bonds", value: 30 },
+                                  { name: "Cash", value: 15 },
+                                  { name: "Other", value: 10 },
+                                ]}
+                                cx="50%"
+                                cy="50%"
+                                outerRadius={50}
+                                fill="#8884d8"
+                                dataKey="value"
+                              >
+                                <Cell fill="#3b82f6" />
+                                <Cell fill="#22c55e" />
+                                <Cell fill="#eab308" />
+                                <Cell fill="#6b7280" />
+                              </Pie>
+                              <RechartsTooltip formatter={(value: number) => `${value}%`} />
+                            </PieChart>
+                          </ResponsiveContainer>
+                        </CardContent>
+                      </Card>
+
+                      {/* Geographic Allocation Tile - Row 1, Col 3 */}
+                      <Card 
+                        className="border border-gray-200 shadow-sm bg-white cursor-pointer hover:shadow-md transition-shadow"
+                        onClick={() => {
+                          setPlanDetailTab("details");
+                          setPlanDetailsSubTab("allocations");
+                        }}
+                      >
+                        <CardHeader className="pb-2">
+                          <CardTitle className="text-sm font-semibold text-gray-900">Geographic Allocation</CardTitle>
+                        </CardHeader>
+                        <CardContent className="pt-0 pb-2">
+                          <ResponsiveContainer width="100%" height={120}>
+                            <PieChart>
+                              <Pie
+                                data={[
+                                  { name: "North America", value: 50 },
+                                  { name: "Europe", value: 25 },
+                                  { name: "Asia", value: 15 },
+                                  { name: "Other", value: 10 },
+                                ]}
+                                cx="50%"
+                                cy="50%"
+                                outerRadius={50}
+                                fill="#8884d8"
+                                dataKey="value"
+                              >
+                                <Cell fill="#3b82f6" />
+                                <Cell fill="#22c55e" />
+                                <Cell fill="#eab308" />
+                                <Cell fill="#6b7280" />
+                              </Pie>
+                              <RechartsTooltip formatter={(value: number) => `${value}%`} />
+                            </PieChart>
+                          </ResponsiveContainer>
+                        </CardContent>
+                      </Card>
+
+                      {/* Sector Allocation Tile - Row 1, Col 4 */}
+                      <Card 
+                        className="border border-gray-200 shadow-sm bg-white cursor-pointer hover:shadow-md transition-shadow"
+                        onClick={() => {
+                          setPlanDetailTab("details");
+                          setPlanDetailsSubTab("allocations");
+                        }}
+                      >
+                        <CardHeader className="pb-2">
+                          <CardTitle className="text-sm font-semibold text-gray-900">Sector Allocation</CardTitle>
+                        </CardHeader>
+                        <CardContent className="pt-0 pb-2">
+                          <ResponsiveContainer width="100%" height={120}>
+                            <PieChart>
+                              <Pie
+                                data={[
+                                  { name: "Technology", value: 30 },
+                                  { name: "Financial", value: 25 },
+                                  { name: "Healthcare", value: 20 },
+                                  { name: "Other", value: 25 },
+                                ]}
+                                cx="50%"
+                                cy="50%"
+                                outerRadius={50}
+                                fill="#8884d8"
+                                dataKey="value"
+                              >
+                                <Cell fill="#3b82f6" />
+                                <Cell fill="#22c55e" />
+                                <Cell fill="#eab308" />
+                                <Cell fill="#6b7280" />
+                              </Pie>
+                              <RechartsTooltip formatter={(value: number) => `${value}%`} />
+                            </PieChart>
+                          </ResponsiveContainer>
+                        </CardContent>
+                      </Card>
+                    </div>
+
+                    {/* Second Row - Trading Actions Tile */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 items-stretch mt-4">
                       {/* Trading Actions Tile */}
                       <Card className="border border-gray-200 shadow-sm bg-white flex flex-col">
                         <CardContent className="p-6 flex-1 flex items-center justify-center">
                           <div className="flex items-center justify-center gap-3">
-                            <Button variant="ghost" size="sm" className="h-8 w-8 p-0 hover:bg-gray-100">
+                            <Button 
+                              variant="ghost" 
+                              size="sm" 
+                              className="h-8 w-8 p-0 hover:bg-gray-100"
+                              title="Buy more units"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                // Add buy action handler here
+                              }}
+                            >
                               <Plus className="h-4 w-4" />
                             </Button>
-                            <Button variant="ghost" size="sm" className="h-8 w-8 p-0 hover:bg-gray-100">
+                            <Button 
+                              variant="ghost" 
+                              size="sm" 
+                              className="h-8 w-8 p-0 hover:bg-gray-100"
+                              title="Sell units"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                // Add sell action handler here
+                              }}
+                            >
                               <Minus className="h-4 w-4" />
                             </Button>
-                            <Button variant="ghost" size="sm" className="h-8 w-8 p-0 hover:bg-gray-100">
+                            <Button 
+                              variant="ghost" 
+                              size="sm" 
+                              className="h-8 w-8 p-0 hover:bg-gray-100"
+                              title="Switch/Conversion"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                // Add switch action handler here
+                              }}
+                            >
                               <ArrowLeftRight className="h-4 w-4" />
                             </Button>
                           </div>
+                        </CardContent>
+                      </Card>
+                    </div>
+
+                    {/* Third Row - Additional Allocation Tiles */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 items-stretch mt-4">
+                      {/* Empty Tile */}
+                      <Card className="border border-gray-200 shadow-sm bg-white flex flex-col">
+                        <CardHeader className="pb-3">
+                          <CardTitle className="text-sm font-semibold text-gray-900">Empty Tile</CardTitle>
+                        </CardHeader>
+                        <CardContent className="pt-0 pb-3 flex-1">
+                        </CardContent>
+                      </Card>
+
+                      {/* Empty Tile */}
+                      <Card className="border border-gray-200 shadow-sm bg-white flex flex-col">
+                        <CardHeader className="pb-3">
+                          <CardTitle className="text-sm font-semibold text-gray-900">Empty Tile</CardTitle>
+                        </CardHeader>
+                        <CardContent className="pt-0 pb-3 flex-1">
+                        </CardContent>
+                      </Card>
+
+                      {/* Empty Tile */}
+                      <Card className="border border-gray-200 shadow-sm bg-white flex flex-col">
+                        <CardHeader className="pb-3">
+                          <CardTitle className="text-sm font-semibold text-gray-900">Empty Tile</CardTitle>
+                        </CardHeader>
+                        <CardContent className="pt-0 pb-3 flex-1">
+                        </CardContent>
+                      </Card>
+
+                      {/* Notices Tile */}
+                      <Card className="border border-gray-200 shadow-sm bg-white flex flex-col">
+                        <CardHeader className="pb-3">
+                          <CardTitle className="text-sm font-semibold text-gray-900">Notices</CardTitle>
+                        </CardHeader>
+                        <CardContent className="pt-0 pb-3 flex-1 flex items-center justify-center">
+                          <p className="text-xs text-gray-400">No notices</p>
+                        </CardContent>
+                      </Card>
+                    </div>
+
+                    {/* Fourth Row - Additional Empty Tiles */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 items-stretch mt-4">
+                      {/* Empty Tile */}
+                      <Card className="border border-gray-200 shadow-sm bg-white flex flex-col">
+                        <CardHeader className="pb-3">
+                          <CardTitle className="text-sm font-semibold text-gray-900">Empty Tile</CardTitle>
+                        </CardHeader>
+                        <CardContent className="pt-0 pb-3 flex-1">
+                        </CardContent>
+                      </Card>
+
+                      {/* Empty Tile */}
+                      <Card className="border border-gray-200 shadow-sm bg-white flex flex-col">
+                        <CardHeader className="pb-3">
+                          <CardTitle className="text-sm font-semibold text-gray-900">Empty Tile</CardTitle>
+                        </CardHeader>
+                        <CardContent className="pt-0 pb-3 flex-1">
+                        </CardContent>
+                      </Card>
+
+                      {/* Empty Tile */}
+                      <Card className="border border-gray-200 shadow-sm bg-white flex flex-col">
+                        <CardHeader className="pb-3">
+                          <CardTitle className="text-sm font-semibold text-gray-900">Empty Tile</CardTitle>
+                        </CardHeader>
+                        <CardContent className="pt-0 pb-3 flex-1">
+                        </CardContent>
+                      </Card>
+
+                      {/* Empty Tile */}
+                      <Card className="border border-gray-200 shadow-sm bg-white flex flex-col">
+                        <CardHeader className="pb-3">
+                          <CardTitle className="text-sm font-semibold text-gray-900">Empty Tile</CardTitle>
+                        </CardHeader>
+                        <CardContent className="pt-0 pb-3 flex-1">
                         </CardContent>
                       </Card>
                     </div>
