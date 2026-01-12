@@ -3916,6 +3916,29 @@ const ClientDetails = () => {
               <CardContent className="pt-0 pb-1">
               </CardContent>
             </Card>
+            <div className="flex justify-end mt-8">
+              <Button 
+                size="sm" 
+                className="bg-blue-600 hover:bg-blue-700 text-white text-xs h-7"
+                onClick={() => {
+                  setIsSelectPlanTypeOpen(true);
+                  setSelectedPlanType("");
+                  setPlanSetupStep(0);
+                  const currentClient = CLIENTS.find((c) => c.id === id);
+                  setOwnerName(currentClient?.name || "John Smith");
+                  setBeneficiaryName("");
+                  setIntermediaryCode("");
+                  setIntermediaryAccountCode("");
+                  setPlanNotes("");
+                  setPlanObjectives("");
+                  setRiskTolerance("");
+                  setTimeHorizon("");
+                  setCreatedPlanDetails(null);
+                }}
+              >
+                Add new Plan
+              </Button>
+            </div>
           </div>
 
         </div>
