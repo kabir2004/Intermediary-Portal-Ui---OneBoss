@@ -14303,80 +14303,95 @@ const ClientDetails = () => {
       {/* Add Product Dialog */}
       <Dialog open={isAddProductOpen} onOpenChange={setIsAddProductOpen}>
         <DialogContent className="sm:max-w-[500px]">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2 text-lg text-blue-600">
-              <Plus className="h-5 w-5 text-blue-600" />
+          <DialogHeader className="pb-2">
+            <DialogTitle className="flex items-center gap-2 text-sm text-blue-600">
+              <Plus className="h-3.5 w-3.5 text-blue-600" />
               Add Product
             </DialogTitle>
-            <DialogDescription className="text-sm text-gray-600 mt-2">
-              Add a new investment product to your portfolio
-            </DialogDescription>
           </DialogHeader>
-          <div className="space-y-4 py-4">
+          <div className="space-y-2 py-1">
             {/* New Plan Created Successfully */}
             <Card className="border border-blue-200 bg-blue-50">
-              <CardContent className="p-4">
-                <div className="flex items-center gap-2 mb-3">
-                  <CheckCircle2 className="h-5 w-5 text-green-600" />
-                  <p className="text-sm font-bold text-gray-900">New Plan Created Successfully!</p>
+              <CardContent className="p-2">
+                <div className="flex items-center gap-1.5 mb-1.5">
+                  <CheckCircle2 className="h-3.5 w-3.5 text-green-600" />
+                  <p className="text-xs font-bold text-gray-900">New Plan Created Successfully!</p>
                 </div>
-                <div className="space-y-1 text-sm text-gray-700">
+                <div className="grid grid-cols-2 gap-x-4 gap-y-0.5 text-[10px] text-gray-700">
                   <div><span className="font-semibold">Plan Type:</span> {createdPlanDetails?.planType}</div>
                   <div><span className="font-semibold">Plan ID:</span> {createdPlanDetails?.planId}</div>
                   <div><span className="font-semibold">Account Number:</span> {createdPlanDetails?.accountNumber}</div>
                   <div><span className="font-semibold">Owner:</span> {createdPlanDetails?.owner}</div>
                 </div>
-                <div className="flex items-center gap-2 mt-3 text-blue-600">
-                  <Plus className="h-4 w-4" />
-                  <span className="text-sm font-medium">Add your first investment to this plan below</span>
+                <div className="flex items-center gap-1 mt-1.5 text-blue-600">
+                  <Plus className="h-3 w-3" />
+                  <span className="text-[10px] font-medium">Add your first investment to this plan below</span>
                 </div>
               </CardContent>
             </Card>
 
             {/* Trust Account CAD */}
             <Card className="border border-blue-200 bg-blue-50">
-              <CardContent className="p-4">
-                <p className="text-xs text-gray-600 mb-2">$ Trust Account CAD</p>
-                <p className="text-2xl font-bold text-gray-900 mb-2">$1,250.00</p>
-                <div className="space-y-1">
-                  <div className="flex justify-between text-xs">
-                    <span className="text-gray-600">Settled:</span>
-                    <span className="text-green-600 font-medium">$1,250.00</span>
+              <CardContent className="p-2">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-[10px] text-gray-600">$ Trust Account CAD</p>
+                    <p className="text-lg font-bold text-gray-900">$1,250.00</p>
                   </div>
-                  <div className="flex justify-between text-xs">
-                    <span className="text-gray-600">Unsettled:</span>
-                    <span className="text-orange-600 font-medium">$0.00</span>
+                  <div className="text-right space-y-0.5">
+                    <div className="flex justify-between gap-4 text-[10px]">
+                      <span className="text-gray-600">Settled:</span>
+                      <span className="text-green-600 font-medium">$1,250.00</span>
+                    </div>
+                    <div className="flex justify-between gap-4 text-[10px]">
+                      <span className="text-gray-600">Unsettled:</span>
+                      <span className="text-orange-600 font-medium">$0.00</span>
+                    </div>
                   </div>
                 </div>
               </CardContent>
             </Card>
 
-            {/* Select Fund Company */}
-            <div>
-              <Label className="text-sm font-semibold text-gray-700 mb-2 block">
-                Select Fund Company
-              </Label>
-              <Select value={addProductFundCompany} onValueChange={setAddProductFundCompany}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Choose a company that offers funds" />
-                </SelectTrigger>
-                <SelectContent>
-                  {FUND_COMPANIES.map((company) => (
-                    <SelectItem key={company.id} value={company.name}>
-                      {company.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+            {/* Select Fund Company and Search - Side by Side */}
+            <div className="grid grid-cols-2 gap-2">
+              <div>
+                <Label className="text-[10px] font-semibold text-gray-700 mb-1 block">
+                  Select Fund Company
+                </Label>
+                <Select value={addProductFundCompany} onValueChange={setAddProductFundCompany}>
+                  <SelectTrigger className="h-8 text-xs">
+                    <SelectValue placeholder="Choose company" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {FUND_COMPANIES.map((company) => (
+                      <SelectItem key={company.id} value={company.name}>
+                        {company.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <Label className="text-[10px] font-semibold text-gray-700 mb-1 block">
+                  Investment Amount ($)
+                </Label>
+                <Input
+                  type="number"
+                  value={addProductAmount}
+                  onChange={(e) => setAddProductAmount(e.target.value)}
+                  placeholder="Enter amount"
+                  className="h-8 text-xs"
+                />
+              </div>
             </div>
 
             {/* Search for Specific Fund */}
             <div>
-              <Label className="text-sm font-semibold text-gray-700 mb-2 block">
+              <Label className="text-[10px] font-semibold text-gray-700 mb-1 block">
                 Search for Specific Fund
               </Label>
               <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 h-3 w-3 text-gray-400" />
                 <Input
                   type="text"
                   value={addProductFundSearch}
@@ -14388,11 +14403,11 @@ const ClientDetails = () => {
                     }
                   }}
                   placeholder="Search funds by name, symbol, or category"
-                  className="pl-10"
+                  className="pl-8 h-8 text-xs"
                 />
               </div>
               {addProductFundCompany && addProductFundSearch && COMPANY_FUNDS[addProductFundCompany] && (
-                <div className="mt-2 space-y-1 max-h-48 overflow-y-auto">
+                <div className="mt-1 space-y-0.5 max-h-32 overflow-y-auto">
                   {COMPANY_FUNDS[addProductFundCompany]
                     .filter((fund) =>
                       fund.name.toLowerCase().includes(addProductFundSearch.toLowerCase()) ||
@@ -14412,9 +14427,9 @@ const ClientDetails = () => {
                           setAddProductFundSearch(fund.name);
                         }}
                       >
-                        <CardContent className="p-3">
-                          <p className="text-sm font-semibold text-gray-900">{fund.name}</p>
-                          <p className="text-xs text-gray-600">{fund.symbol} • {fund.category}</p>
+                        <CardContent className="p-1.5">
+                          <p className="text-[10px] font-semibold text-gray-900">{fund.name}</p>
+                          <p className="text-[9px] text-gray-600">{fund.symbol} • {fund.category}</p>
                         </CardContent>
                       </Card>
                     ))}
@@ -14422,45 +14437,37 @@ const ClientDetails = () => {
               )}
             </div>
 
-            {/* Investment Amount */}
-            <div>
-              <Label className="text-sm font-semibold text-gray-700 mb-2 block">
-                Investment Amount ($)
-              </Label>
-              <Input
-                type="number"
-                value={addProductAmount}
-                onChange={(e) => setAddProductAmount(e.target.value)}
-                placeholder="Enter amount to invest"
-              />
-            </div>
-
             {/* Order Preview */}
             <Card className="border border-blue-200 bg-blue-50">
-              <CardContent className="p-4">
-                <p className="text-sm font-semibold text-blue-900 mb-3">Order Preview</p>
-                <div className="space-y-1 text-sm text-blue-700">
-                  <div><span className="font-semibold">Fund:</span> {addProductSelectedFund || "Not selected"}</div>
-                  <div><span className="font-semibold">Amount:</span> ${addProductAmount || "0"}</div>
+              <CardContent className="p-2">
+                <div className="flex items-start justify-between gap-4">
+                  <div className="flex-1">
+                    <p className="text-[10px] font-semibold text-blue-900 mb-1">Order Preview</p>
+                    <div className="space-y-0.5 text-[10px] text-blue-700">
+                      <div><span className="font-semibold">Fund:</span> {addProductSelectedFund || "Not selected"}</div>
+                      <div><span className="font-semibold">Amount:</span> ${addProductAmount || "0"}</div>
+                    </div>
+                  </div>
+                  <p className="text-[9px] text-blue-600 flex-1">
+                    This will purchase the selected fund with the specified amount.
+                  </p>
                 </div>
-                <p className="text-sm text-blue-600 mt-2">
-                  This will purchase the selected fund with the specified amount.
-                </p>
                 {addProductAmount && parseFloat(addProductAmount) > 1250 && (
-                  <div className="flex items-center gap-2 mt-3 text-orange-600">
-                    <AlertTriangle className="h-4 w-4" />
-                    <span className="text-xs">Purchase amount exceeds settled balance ($1,250.00)</span>
+                  <div className="flex items-center gap-1 mt-1.5 text-orange-600">
+                    <AlertTriangle className="h-3 w-3" />
+                    <span className="text-[9px]">Purchase amount exceeds settled balance ($1,250.00)</span>
                   </div>
                 )}
               </CardContent>
             </Card>
           </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setIsAddProductOpen(false)}>
+          <DialogFooter className="pt-2">
+            <Button variant="outline" size="sm" className="h-8 text-xs" onClick={() => setIsAddProductOpen(false)}>
               Cancel
             </Button>
             <Button
-              className="bg-green-600 hover:bg-green-700 text-white"
+              size="sm"
+              className="bg-green-600 hover:bg-green-700 text-white h-8 text-xs"
               onClick={() => {
                 if (addProductSelectedFund && addProductAmount) {
                   const selectedFund = COMPANY_FUNDS[addProductFundCompany]?.find(
@@ -14478,6 +14485,10 @@ const ClientDetails = () => {
                     symbol: selectedFund?.symbol || "",
                     amount: `$${addProductAmount}`,
                     time: orderDate,
+                    planType: createdPlanDetails?.planType,
+                    planId: createdPlanDetails?.planId,
+                    accountNumber: createdPlanDetails?.accountNumber,
+                    owner: createdPlanDetails?.owner,
                   });
                   
                   setIsAddProductOpen(false);
@@ -14495,58 +14506,67 @@ const ClientDetails = () => {
       {/* Investment Order Confirmed Dialog */}
       <Dialog open={isInvestmentOrderConfirmedOpen} onOpenChange={setIsInvestmentOrderConfirmedOpen}>
         <DialogContent className="sm:max-w-[450px]">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2 text-lg text-blue-600">
-              <CheckCircle2 className="h-5 w-5 text-green-600" />
-              Investment Order Confirmed
-            </DialogTitle>
-            <DialogDescription className="text-sm text-gray-600 mt-2">
+          <DialogHeader className="text-center">
+            <div className="flex justify-center mb-2">
+              <div className="h-12 w-12 rounded-full bg-green-100 flex items-center justify-center">
+                <CheckCircle2 className="h-6 w-6 text-green-600" />
+              </div>
+            </div>
+            <DialogTitle className="text-lg font-semibold text-center">Order Confirmation</DialogTitle>
+            <DialogDescription className="text-sm text-gray-600 mt-2 text-center">
               Your investment order has been placed successfully
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4 py-4">
             {/* Order Details */}
-            <Card className="border border-blue-200 bg-blue-50">
+            <Card className="border border-gray-200 bg-white">
               <CardContent className="p-4">
-                <p className="text-sm font-semibold text-blue-800 mb-3">Order Details:</p>
-                <div className="space-y-2 text-sm">
-                  <div className="flex justify-between">
-                    <span className="text-blue-700">Company:</span>
-                    <span className="text-blue-900 font-medium">{investmentOrderDetails?.company || "RBC Global Asset Management"}</span>
+                <div className="space-y-3">
+                  <div>
+                    <p className="text-xs text-gray-500 mb-1">Plan</p>
+                    <p className="text-sm font-semibold text-gray-900">
+                      {investmentOrderDetails?.planType || "RRSP"} - {investmentOrderDetails?.planId || "PLN-1234567890"}
+                    </p>
                   </div>
-                  <div className="flex justify-between">
-                    <span className="text-blue-700">Fund:</span>
-                    <span className="text-blue-900 font-medium">{investmentOrderDetails?.fund || "RBC Global Equity Fund - Series A"}</span>
+                  <div className="border-t border-gray-200 pt-3">
+                    <div>
+                      <p className="text-xs text-gray-500 mb-1">Fund</p>
+                      <p className="text-sm font-semibold text-gray-900">
+                        {investmentOrderDetails?.fund || "RBC Global Equity Fund - Series A"}
+                      </p>
+                    </div>
                   </div>
-                  <div className="flex justify-between">
-                    <span className="text-blue-700">Symbol:</span>
-                    <span className="text-blue-900 font-medium">{investmentOrderDetails?.symbol || "RBC-GLO"}</span>
+                  <div className="border-t border-gray-200 pt-3">
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <p className="text-xs text-gray-500 mb-1">Company</p>
+                        <p className="text-sm font-medium text-gray-900">{investmentOrderDetails?.company || "RBC Global Asset Management"}</p>
+                      </div>
+                      <div>
+                        <p className="text-xs text-gray-500 mb-1">Symbol</p>
+                        <p className="text-sm font-medium text-gray-900">{investmentOrderDetails?.symbol || "RBC-GLO"}</p>
+                      </div>
+                    </div>
                   </div>
-                  <div className="flex justify-between">
-                    <span className="text-blue-700">Amount:</span>
-                    <span className="text-blue-900 font-medium">{investmentOrderDetails?.amount || "$2000"}</span>
+                  <div className="border-t border-gray-200 pt-3">
+                    <div className="flex justify-between items-center">
+                      <p className="text-sm font-semibold text-gray-900">Amount</p>
+                      <p className="text-sm font-bold text-gray-900">{investmentOrderDetails?.amount || "$2,000.00"}</p>
+                    </div>
                   </div>
-                  <div className="flex justify-between">
-                    <span className="text-blue-700">Time:</span>
-                    <span className="text-blue-900 font-medium">{investmentOrderDetails?.time || "12/14/2025, 7:48:07 PM"}</span>
+                  <div className="border-t border-gray-200 pt-3">
+                    <div>
+                      <p className="text-xs text-gray-500 mb-1">Time</p>
+                      <p className="text-sm font-medium text-gray-900">{investmentOrderDetails?.time || "12/14/2025, 7:48:07 PM"}</p>
+                    </div>
                   </div>
                 </div>
-              </CardContent>
-            </Card>
-
-            {/* Processing Status */}
-            <Card className="border border-orange-200 bg-orange-50">
-              <CardContent className="p-4">
-                <p className="text-sm font-semibold text-orange-800 mb-2">Processing Status: Pending</p>
-                <p className="text-xs text-orange-700">
-                  Order will be processed at next market close
-                </p>
               </CardContent>
             </Card>
           </div>
           <DialogFooter>
             <Button
-              className="w-full bg-green-600 hover:bg-green-700 text-white"
+              className="w-full bg-blue-600 hover:bg-blue-700 text-white"
               onClick={() => {
                 setIsInvestmentOrderConfirmedOpen(false);
                 setInvestmentOrderDetails(null);
