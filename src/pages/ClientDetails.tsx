@@ -223,7 +223,7 @@ const ClientDetails = () => {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("investments");
   const [clientViewTab, setClientViewTab] = useState("summary");
-  const [showHiddenTabs, setShowHiddenTabs] = useState(true);
+  const [showHiddenTabs, setShowHiddenTabs] = useState<Set<string>>(new Set());
   const [searchTerm, setSearchTerm] = useState("");
   const [activeFilter, setActiveFilter] = useState("Active");
   const [viewMode, setViewMode] = useState<"list" | "grid">("list");
@@ -3403,7 +3403,7 @@ const ClientDetails = () => {
   };
 
   return (
-    <PageLayout title="">
+    <PageLayout title={""}>
       <div className="space-y-6">
         {/* Client Name and Account */}
         <div className="space-y-2">
@@ -3444,14 +3444,23 @@ const ClientDetails = () => {
               className="h-6 w-6 p-0"
               onClick={() => {
                 const hiddenTabValues = ["questionnaires", "client-reports", "charts", "approvals", "attachments"];
-                if (showHiddenTabs && hiddenTabValues.includes(clientViewTab)) {
+                const isCurrentlyVisible = showHiddenTabs.has(client.id);
+                if (isCurrentlyVisible && hiddenTabValues.includes(clientViewTab)) {
                   setClientViewTab("summary");
                 }
-                setShowHiddenTabs(!showHiddenTabs);
+                setShowHiddenTabs(prev => {
+                  const newSet = new Set(prev);
+                  if (newSet.has(client.id)) {
+                    newSet.delete(client.id);
+                  } else {
+                    newSet.add(client.id);
+                  }
+                  return newSet;
+                });
               }}
-              title={showHiddenTabs ? "Hide tabs" : "Show tabs"}
+              title={showHiddenTabs.has(client.id) ? "Hide tabs" : "Show tabs"}
             >
-              {showHiddenTabs ? (
+              {showHiddenTabs.has(client.id) ? (
                 <Eye className="h-4 w-4 text-gray-600" />
               ) : (
                 <EyeOff className="h-4 w-4 text-gray-600" />
@@ -3498,7 +3507,7 @@ const ClientDetails = () => {
             Trading
             <HelpCircle className="h-3 w-3 ml-1" />
           </Button>
-          {showHiddenTabs && (
+          {showHiddenTabs.has(client.id) && (
             <>
               <Button
                 variant={clientViewTab === "questionnaires" ? "default" : "ghost"}
