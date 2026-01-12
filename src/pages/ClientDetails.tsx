@@ -103,6 +103,7 @@ const FUND_COMPANIES = [
   { name: "Sun Life Financial", id: "sunlife", fundsCount: 12 },
   { name: "IG Wealth Management", id: "ig", fundsCount: 16 },
   { name: "Mackenzie Investments", id: "mackenzie", fundsCount: 24 },
+  { name: "AGF Investments", id: "agf", fundsCount: 20 },
 ];
 
 // Mock funds for each company
@@ -160,6 +161,14 @@ const COMPANY_FUNDS: { [key: string]: Array<{ name: string; symbol: string; cate
     { name: "Mackenzie Canadian Equity Fund - Series A", symbol: "MACK-CAN", category: "Equity" },
     { name: "Mackenzie Balanced Fund - Series A", symbol: "MACK-BAL", category: "Balanced" },
   ],
+  "AGF Investments": [
+    { name: "AGF CANADIAN DIVIDEND INCOME FUND SERIES F", symbol: "AGF-185", category: "Equity" },
+    { name: "AGF GLOBAL BOND FUND SERIES F", symbol: "AGF-5555", category: "Fixed Income" },
+    { name: "AGF Canadian Equity Fund - Series F", symbol: "AGF-CAN", category: "Equity" },
+    { name: "AGF Balanced Fund - Series F", symbol: "AGF-BAL", category: "Balanced" },
+    { name: "AGF Income Fund - Series F", symbol: "AGF-INC", category: "Income" },
+    { name: "AGF Global Equity Fund - Series F", symbol: "AGF-GLO", category: "Global" },
+  ],
 };
 
 // Helper function to get the company name from a product
@@ -199,6 +208,9 @@ const getProductCompany = (product: any): string => {
   }
   if (supplier.includes("MACKENZIE") || productName.includes("MACKENZIE")) {
     return "Mackenzie Investments";
+  }
+  if (supplier.includes("AGF") || productName.includes("AGF")) {
+    return "AGF Investments";
   }
   
   // Default to Fidelity if unknown
@@ -258,6 +270,15 @@ const ClientDetails = () => {
   const [selectedFundCompany, setSelectedFundCompany] = useState("");
   const [selectedFundToSwitch, setSelectedFundToSwitch] = useState("");
   const [unitsToSwitch, setUnitsToSwitch] = useState("");
+  const [planLevelSelectedFund, setPlanLevelSelectedFund] = useState<any>(null);
+  const [planLevelFundCompany, setPlanLevelFundCompany] = useState("");
+  const [planLevelCompanySearch, setPlanLevelCompanySearch] = useState("");
+  const [planLevelFundSearch, setPlanLevelFundSearch] = useState("");
+  const [planBuyStep, setPlanBuyStep] = useState<"select" | "details">("select");
+  const [planSwitchFromFund, setPlanSwitchFromFund] = useState<any>(null);
+  const [planSwitchToFund, setPlanSwitchToFund] = useState<any>(null);
+  const [planSwitchStep, setPlanSwitchStep] = useState<"from" | "to" | "details">("from");
+  const [planSwitchUnits, setPlanSwitchUnits] = useState("");
   const [switchOrderDetails, setSwitchOrderDetails] = useState<any>(null);
   const [convertOrderDetails, setConvertOrderDetails] = useState<any>(null);
   const [isSelectPlanTypeOpen, setIsSelectPlanTypeOpen] = useState(false);
@@ -3989,6 +4010,11 @@ const ClientDetails = () => {
                                       setSelectedPlanBalance(planTotal);
                                       setInvestmentAmount("");
                                       setNumberOfUnits("");
+                                      setPlanLevelSelectedFund(null);
+                                      setPlanLevelFundCompany("");
+                                      setPlanLevelCompanySearch("");
+                                      setPlanLevelFundSearch("");
+                                      setPlanBuyStep("select");
                                       setIsBuyUnitsDialogOpen(true);
                                     }}
                                   >
@@ -4009,6 +4035,10 @@ const ClientDetails = () => {
                                       setSelectedPlanBalance(planTotal);
                                       setSellUnits("");
                                       setSellDollarAmount("");
+                                      setPlanLevelSelectedFund(null);
+                                      setPlanLevelFundCompany("");
+                                      setPlanLevelCompanySearch("");
+                                      setPlanLevelFundSearch("");
                                       setIsSellUnitsDialogOpen(true);
                                     }}
                                   >
@@ -4032,6 +4062,13 @@ const ClientDetails = () => {
                                       setUnitsToSwitch("");
                                       setCompanySearchTerm("");
                                       setFundSearchTerm("");
+                                      setPlanLevelSelectedFund(null);
+                                      setPlanLevelFundCompany("");
+                                      setPlanLevelCompanySearch("");
+                                      setPlanLevelFundSearch("");
+                                      setPlanSwitchFromFund(null);
+                                      setPlanSwitchToFund(null);
+                                      setPlanSwitchStep("from");
                                       setIsSwitchDialogOpen(true);
                                     }}
                                   >
@@ -11417,31 +11454,410 @@ const ClientDetails = () => {
       {/* Buy More Units Dialog */}
       <Dialog open={isBuyUnitsDialogOpen} onOpenChange={setIsBuyUnitsDialogOpen}>
         <DialogContent className="sm:max-w-[500px]">
-          {dialogContext === "plan" ? (
-            <>
-              <DialogHeader>
-                <DialogTitle className="flex items-center gap-2 text-lg">
-                  <Plus className="h-5 w-5 text-green-600" />
-                  Buy More Units
-                </DialogTitle>
-                <DialogDescription className="text-[11px] text-gray-600 mt-2 leading-tight">
-                  Provide menu of funds. If user selects an existing fund, reuse account number.
-                </DialogDescription>
-              </DialogHeader>
-              <DialogFooter className="gap-2">
-                <Button
-                  variant="outline"
-                  onClick={() => {
-                    setIsBuyUnitsDialogOpen(false);
-                    setInvestmentAmount("");
-                    setNumberOfUnits("");
-                  }}
-                >
-                  Cancel
-                </Button>
-              </DialogFooter>
-            </>
-          ) : selectedProduct?.product ? (
+          {dialogContext === "plan" ? (() => {
+            // Find plan by accountNumber
+            const currentPlan = plansList.find(p => p.accountNumber === selectedPlan?.accountNumber);
+            const planInvestments = currentPlan ? getPlanInvestments(currentPlan.id) : [];
+            const existingFunds = planInvestments.map(fundId => getFundAccountById(fundId)).filter(Boolean);
+            
+            // Convert selected fund to product format
+            const selectedFundProduct = planLevelSelectedFund ? (planLevelSelectedFund.isExisting ? {
+              product: planLevelSelectedFund.productName || "",
+              units: planLevelSelectedFund.currentPrice ? (() => {
+                const price = parseFloat(planLevelSelectedFund.currentPrice.replace(/[^0-9.]/g, ''));
+                const marketValue = parseFloat(planLevelSelectedFund.marketValue.replace(/[^0-9.]/g, ''));
+                return price > 0 ? (marketValue / price).toFixed(4) : "0.0000";
+              })() : "0.0000",
+              price: planLevelSelectedFund.currentPrice || "$0.00",
+              marketValue: planLevelSelectedFund.marketValue || "$0.00",
+            } : {
+              product: planLevelSelectedFund.name || "",
+              units: "0.0000",
+              price: "$0.00",
+              marketValue: "$0.00",
+            }) : null;
+            
+            return (
+              <>
+                <DialogHeader>
+                  <DialogTitle className="flex items-center gap-2 text-lg">
+                    <Plus className="h-5 w-5 text-green-600" />
+                    Buy More Units
+                  </DialogTitle>
+                  <DialogDescription className="text-[11px] text-gray-600 mt-2 leading-tight">
+                    {planBuyStep === "select" 
+                      ? "Select a fund to purchase. Choose an existing fund to reuse account number, or select a new fund to add."
+                      : `Purchase additional units of ${selectedFundProduct?.product?.split(" Series")[0] || selectedFundProduct?.product || ""}`}
+                  </DialogDescription>
+                </DialogHeader>
+                {planBuyStep === "select" ? (
+                  <>
+                    <div className="space-y-4 py-4">
+                      {/* Select Fund Company */}
+                      <div className="relative">
+                        <Label className="text-sm font-semibold text-gray-700 mb-2 block">
+                          Select Fund Company
+                        </Label>
+                        <div className="relative">
+                          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400 z-10" />
+                          <Input
+                            type="text"
+                            value={planLevelFundCompany || planLevelCompanySearch}
+                            onChange={(e) => {
+                              const search = e.target.value;
+                              setPlanLevelCompanySearch(search);
+                              if (search !== planLevelFundCompany) {
+                                setPlanLevelFundCompany("");
+                                setPlanLevelSelectedFund(null);
+                                setPlanLevelFundSearch("");
+                              }
+                            }}
+                            onFocus={() => {
+                              if (planLevelFundCompany) {
+                                setPlanLevelCompanySearch(planLevelFundCompany);
+                              }
+                            }}
+                            placeholder="Select fund company"
+                            className="pl-10"
+                          />
+                        </div>
+                        {planLevelCompanySearch && !planLevelFundCompany && (
+                          <div className="absolute z-50 w-full mt-1 max-h-56 overflow-y-auto border border-gray-200 rounded-md bg-white shadow-lg p-1.5">
+                            <div className="space-y-0.5">
+                              {FUND_COMPANIES
+                                .filter((company) =>
+                                  company.name.toLowerCase().includes(planLevelCompanySearch.toLowerCase())
+                                )
+                                .sort((a, b) => a.name.localeCompare(b.name))
+                                .map((company) => (
+                                  <Card
+                                    key={company.id}
+                                    className="border cursor-pointer transition-colors border-gray-200 bg-gray-50 hover:bg-gray-100"
+                                    onClick={() => {
+                                      setPlanLevelFundCompany(company.name);
+                                      setPlanLevelCompanySearch("");
+                                      setPlanLevelSelectedFund(null);
+                                      setPlanLevelFundSearch("");
+                                    }}
+                                  >
+                                    <CardContent className="p-2 flex items-center justify-between">
+                                      <div>
+                                        <p className="text-xs font-semibold text-gray-900">{company.name}</p>
+                                        <p className="text-[10px] text-gray-600">{company.fundsCount} funds available</p>
+                                      </div>
+                                    </CardContent>
+                                  </Card>
+                                ))}
+                            </div>
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Select Fund */}
+                      {planLevelFundCompany ? (
+                        <div className="relative">
+                          <Label className="text-sm font-semibold text-gray-700 mb-2 block">
+                            Select Fund
+                          </Label>
+                          <div className="relative">
+                            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400 z-10" />
+                            <Input
+                              type="text"
+                              value={planLevelSelectedFund?.name || ""}
+                              onChange={(e) => {
+                                const search = e.target.value;
+                                setPlanLevelFundSearch(search);
+                                if (search !== planLevelSelectedFund?.name) {
+                                  setPlanLevelSelectedFund(null);
+                                }
+                              }}
+                              placeholder={`Search ${planLevelFundCompany} funds by name, symbol, or category`}
+                              className="pl-10"
+                            />
+                          </div>
+                          {planLevelFundSearch && !planLevelSelectedFund && COMPANY_FUNDS[planLevelFundCompany] && (
+                            <div className="absolute z-50 w-full mt-1 max-h-56 overflow-y-auto border border-gray-200 rounded-md bg-white shadow-lg p-1.5">
+                              <div className="space-y-0.5">
+                                {COMPANY_FUNDS[planLevelFundCompany]
+                                  .filter((fund) =>
+                                    fund.name.toLowerCase().includes(planLevelFundSearch.toLowerCase()) ||
+                                    fund.symbol.toLowerCase().includes(planLevelFundSearch.toLowerCase()) ||
+                                    fund.category.toLowerCase().includes(planLevelFundSearch.toLowerCase())
+                                  )
+                                  .sort((a, b) => a.name.localeCompare(b.name))
+                                  .map((fund, index) => (
+                                    <Card
+                                      key={index}
+                                      className="border cursor-pointer transition-colors border-gray-200 bg-gray-50 hover:bg-gray-100"
+                                      onClick={() => {
+                                        setPlanLevelSelectedFund(fund);
+                                        setPlanLevelFundSearch("");
+                                      }}
+                                    >
+                                      <CardContent className="p-2">
+                                        <p className="text-xs font-semibold text-gray-900">{fund.name}</p>
+                                        <p className="text-[10px] text-gray-600">{fund.symbol} • {fund.category}</p>
+                                      </CardContent>
+                                    </Card>
+                                  ))}
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      ) : existingFunds.length > 0 && (
+                        <div>
+                          <Label className="text-sm font-semibold text-gray-700 mb-2 block">
+                            Or Select Existing Fund in Plan
+                          </Label>
+                          <ScrollArea className="h-32 border border-gray-200 rounded-md p-2">
+                            <div className="space-y-1">
+                              {existingFunds.map((fund) => (
+                                <Card
+                                  key={fund.id}
+                                  className={`border cursor-pointer transition-colors ${
+                                    planLevelSelectedFund?.id === fund.id
+                                      ? "border-blue-500 bg-blue-50"
+                                      : "border-gray-200 bg-gray-50 hover:bg-gray-100"
+                                  }`}
+                                  onClick={() => {
+                                    setPlanLevelSelectedFund({ ...fund, isExisting: true });
+                                    setPlanLevelFundCompany("");
+                                    setPlanLevelCompanySearch("");
+                                    setPlanLevelFundSearch("");
+                                  }}
+                                >
+                                  <CardContent className="p-2">
+                                    <p className="text-xs font-semibold text-gray-900">{fund.productName}</p>
+                                    <p className="text-[10px] text-gray-600">Account: {fund.accountNumber || fund.id}</p>
+                                  </CardContent>
+                                </Card>
+                              ))}
+                            </div>
+                          </ScrollArea>
+                        </div>
+                      )}
+                    </div>
+                    <DialogFooter className="gap-2">
+                      <Button
+                        variant="outline"
+                        onClick={() => {
+                          setIsBuyUnitsDialogOpen(false);
+                          setInvestmentAmount("");
+                          setNumberOfUnits("");
+                          setPlanLevelSelectedFund(null);
+                          setPlanLevelFundCompany("");
+                          setPlanLevelCompanySearch("");
+                          setPlanLevelFundSearch("");
+                          setPlanBuyStep("select");
+                        }}
+                      >
+                        Cancel
+                      </Button>
+                      {planLevelSelectedFund && (
+                        <Button
+                          className="bg-green-600 hover:bg-green-700 text-white"
+                          onClick={() => {
+                            setPlanBuyStep("details");
+                            setInvestmentAmount("");
+                            setNumberOfUnits("");
+                          }}
+                        >
+                          Next
+                        </Button>
+                      )}
+                    </DialogFooter>
+                  </>
+                ) : (
+                  <>
+                    <div className="space-y-4 py-4">
+                      {/* Account Balance */}
+                      <Card className="border border-blue-200 bg-blue-50">
+                        <CardContent className="p-4">
+                          <div className="flex justify-between items-start mb-2">
+                            <p className="text-xs font-semibold text-gray-700">Account Balance</p>
+                            <p className="text-xs font-semibold text-gray-700">{selectedPlan?.shortType || "RRSP"} CAD</p>
+                          </div>
+                          <p className="text-2xl font-bold text-gray-900 mb-2">${selectedPlanBalance.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
+                          <div className="space-y-1">
+                            <div className="flex justify-between text-xs">
+                              <span className="text-gray-600">Settled:</span>
+                              <span className="text-gray-900 font-medium">${selectedPlanBalance.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+                            </div>
+                            <div className="flex justify-between text-xs">
+                              <span className="text-gray-600">Unsettled:</span>
+                              <span className="text-gray-900 font-medium">$0.00</span>
+                            </div>
+                          </div>
+                        </CardContent>
+                      </Card>
+
+                      {/* Current Holdings */}
+                      <div className="space-y-2">
+                        <p className="text-sm font-semibold text-gray-900">Current Holdings ({selectedPlan?.shortType || "RRSP"})</p>
+                        <div className="grid grid-cols-3 gap-4 text-sm">
+                          <div>
+                            <p className="text-xs text-gray-600 mb-1">Units</p>
+                            <p className="text-sm font-medium text-gray-900">
+                              {selectedFundProduct?.units || "0.0000"}
+                            </p>
+                          </div>
+                          <div>
+                            <p className="text-xs text-gray-600 mb-1">Price</p>
+                            <p className="text-sm font-medium text-gray-900">
+                              {selectedFundProduct?.price || "$0.00"}
+                            </p>
+                          </div>
+                          <div>
+                            <p className="text-xs text-gray-600 mb-1">Market Value</p>
+                            <p className="text-sm font-medium text-gray-900">{selectedFundProduct?.marketValue || "$0.00"}</p>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Investment Input */}
+                      <div className="space-y-4">
+                        <div>
+                          <label className="text-sm font-semibold text-gray-700 mb-2 block">
+                            Investment Amount ($)
+                          </label>
+                          <Input
+                            type="number"
+                            value={investmentAmount}
+                            onChange={(e) => {
+                              const value = e.target.value;
+                              setInvestmentAmount(value);
+                              if (value && selectedFundProduct?.price) {
+                                const price = parseFloat(selectedFundProduct.price.replace("$", "").replace(" Per Unit", ""));
+                                if (price > 0) {
+                                  const units = (parseFloat(value) / price).toFixed(4);
+                                  setNumberOfUnits(units);
+                                } else {
+                                  setNumberOfUnits("");
+                                }
+                              } else {
+                                setNumberOfUnits("");
+                              }
+                            }}
+                            placeholder="Enter amount to invest"
+                            className="text-lg font-semibold"
+                          />
+                        </div>
+                        <div>
+                          <label className="text-sm font-semibold text-gray-700 mb-2 block">
+                            Or Number of Units
+                          </label>
+                          <Input
+                            type="number"
+                            value={numberOfUnits}
+                            onChange={(e) => {
+                              const value = e.target.value;
+                              setNumberOfUnits(value);
+                              if (value && selectedFundProduct?.price) {
+                                const price = parseFloat(selectedFundProduct.price.replace("$", "").replace(" Per Unit", ""));
+                                if (price > 0) {
+                                  const amount = (parseFloat(value) * price).toFixed(2);
+                                  setInvestmentAmount(amount);
+                                } else {
+                                  setInvestmentAmount("");
+                                }
+                              } else {
+                                setInvestmentAmount("");
+                              }
+                            }}
+                            placeholder="Enter number of units"
+                            className="text-lg font-semibold"
+                          />
+                        </div>
+                      </div>
+
+                      {/* Estimated Cost */}
+                      <Card className="border border-blue-200 bg-blue-50">
+                        <CardContent className="p-4">
+                          <div className="flex justify-between items-start mb-2">
+                            <p className="text-sm font-semibold text-gray-900">Estimated Cost</p>
+                            <p className="text-2xl font-bold text-gray-900">${investmentAmount ? parseFloat(investmentAmount).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : "0.00"}</p>
+                          </div>
+                          <div className="space-y-2 text-sm">
+                            <div className="flex justify-between">
+                              <span className="text-gray-600">Units to purchase:</span>
+                              <span className="text-gray-900 font-medium">
+                                {numberOfUnits || (investmentAmount && selectedFundProduct?.price
+                                  ? (() => {
+                                      const price = parseFloat(selectedFundProduct.price.replace("$", "").replace(" Per Unit", ""));
+                                      return price > 0 ? (parseFloat(investmentAmount) / price).toFixed(4) : "0.0000";
+                                    })()
+                                  : "0.0000")}
+                              </span>
+                            </div>
+                            <div className="flex justify-between">
+                              <span className="text-gray-600">Based on avg. cost</span>
+                              <span className="text-gray-900 font-medium">
+                                {selectedFundProduct?.price || "$0.00"}
+                              </span>
+                            </div>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    </div>
+                    <DialogFooter className="gap-2">
+                      <Button
+                        variant="outline"
+                        onClick={() => {
+                          setPlanBuyStep("select");
+                        }}
+                      >
+                        Back
+                      </Button>
+                      <Button
+                        variant="outline"
+                        onClick={() => {
+                          setIsBuyUnitsDialogOpen(false);
+                          setInvestmentAmount("");
+                          setNumberOfUnits("");
+                          setPlanLevelSelectedFund(null);
+                          setPlanLevelFundCompany("");
+                          setPlanLevelCompanySearch("");
+                          setPlanLevelFundSearch("");
+                          setPlanBuyStep("select");
+                        }}
+                      >
+                        Cancel
+                      </Button>
+                      <Button
+                        className="bg-green-600 hover:bg-green-700 text-white"
+                        disabled={!investmentAmount || parseFloat(investmentAmount) <= 0}
+                        onClick={() => {
+                          const price = selectedFundProduct?.price ? parseFloat(selectedFundProduct.price.replace("$", "").replace(" Per Unit", "")) : 0;
+                          const units = numberOfUnits || (investmentAmount && price > 0
+                            ? (parseFloat(investmentAmount) / price).toFixed(4)
+                            : "0.0000");
+                          
+                          setOrderDetails({
+                            product: selectedFundProduct?.product?.split(" Series")[0] || selectedFundProduct?.product || "",
+                            units: units,
+                            price: `$${price.toFixed(2)}`,
+                            totalCost: `$${investmentAmount ? parseFloat(investmentAmount).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : "0.00"}`,
+                          });
+                          
+                          setIsBuyUnitsDialogOpen(false);
+                          setIsOrderConfirmedDialogOpen(true);
+                          setInvestmentAmount("");
+                          setNumberOfUnits("");
+                          setPlanLevelSelectedFund(null);
+                          setPlanLevelFundCompany("");
+                          setPlanLevelCompanySearch("");
+                          setPlanLevelFundSearch("");
+                          setPlanBuyStep("select");
+                        }}
+                      >
+                        Place Buy Order
+                      </Button>
+                    </DialogFooter>
+                  </>
+                )}
+              </>
+            );
+          })() : selectedProduct?.product ? (
             <>
               <DialogHeader>
                 <DialogTitle className="flex items-center gap-2 text-lg">
@@ -11708,31 +12124,269 @@ const ClientDetails = () => {
       {/* Sell Units Dialog */}
       <Dialog open={isSellUnitsDialogOpen} onOpenChange={setIsSellUnitsDialogOpen}>
         <DialogContent className="sm:max-w-[500px]">
-          {dialogContext === "plan" ? (
-            <>
-              <DialogHeader>
-                <DialogTitle className="flex items-center gap-2 text-lg text-red-600">
-                  <Minus className="h-5 w-5 text-red-600" />
-                  Sell Units
-                </DialogTitle>
-                <DialogDescription className="text-[11px] text-gray-600 mt-2 leading-tight">
-                  Provide menu of funds. If user selects an existing fund, reuse account number.
-                </DialogDescription>
-              </DialogHeader>
-              <DialogFooter className="gap-2">
-                <Button
-                  variant="outline"
-                  onClick={() => {
-                    setIsSellUnitsDialogOpen(false);
-                    setSellUnits("");
-                    setSellDollarAmount("");
-                  }}
-                >
-                  Cancel
-                </Button>
-              </DialogFooter>
-            </>
-          ) : selectedProduct?.product ? (
+          {dialogContext === "plan" ? (() => {
+            // Find plan by accountNumber
+            const currentPlan = plansList.find(p => p.accountNumber === selectedPlan?.accountNumber);
+            const planInvestments = currentPlan ? getPlanInvestments(currentPlan.id) : [];
+            const existingFunds = planInvestments.map(fundId => getFundAccountById(fundId)).filter(Boolean);
+            
+            // Convert selected fund to product format for sell form
+            const selectedFundForSell = planLevelSelectedFund?.isExisting ? planLevelSelectedFund : null;
+            const selectedFundProduct = selectedFundForSell ? {
+              product: selectedFundForSell.productName || "",
+              units: selectedFundForSell.currentPrice ? (() => {
+                const price = parseFloat(selectedFundForSell.currentPrice.replace(/[^0-9.]/g, ''));
+                const marketValue = parseFloat(selectedFundForSell.marketValue.replace(/[^0-9.]/g, ''));
+                return price > 0 ? (marketValue / price).toFixed(4) : "0.0000";
+              })() : "0.0000",
+              price: selectedFundForSell.currentPrice || "$0.00",
+              marketValue: selectedFundForSell.marketValue || "$0.00",
+            } : null;
+            
+            return (
+              <>
+                <DialogHeader>
+                  <DialogTitle className="flex items-center gap-2 text-lg text-red-600">
+                    <Minus className="h-5 w-5 text-red-600" />
+                    Sell Units
+                  </DialogTitle>
+                  <DialogDescription className="text-[11px] text-gray-600 mt-2 leading-tight">
+                    {selectedFundForSell ? `Sell units of ${selectedFundForSell.productName || ""}` : "Select an existing fund to sell from"}
+                  </DialogDescription>
+                </DialogHeader>
+                <div className="space-y-4 py-4">
+                  {!selectedFundForSell ? (
+                    // Fund selection
+                    existingFunds.length > 0 ? (
+                      <div>
+                        <Label className="text-sm font-semibold text-gray-700 mb-2 block">
+                          Select Fund to Sell From
+                        </Label>
+                        <ScrollArea className="h-64 border border-gray-200 rounded-md p-2">
+                          <div className="space-y-1">
+                            {existingFunds.map((fund) => (
+                              <Card
+                                key={fund.id}
+                                className="border cursor-pointer transition-colors border-gray-200 bg-gray-50 hover:bg-gray-100"
+                                onClick={() => {
+                                  setPlanLevelSelectedFund({ ...fund, isExisting: true });
+                                  setSellUnits("");
+                                  setSellDollarAmount("");
+                                }}
+                              >
+                                <CardContent className="p-2">
+                                  <p className="text-xs font-semibold text-gray-900">{fund.productName}</p>
+                                  <p className="text-[10px] text-gray-600">Account: {fund.accountNumber || fund.id}</p>
+                                </CardContent>
+                              </Card>
+                            ))}
+                          </div>
+                        </ScrollArea>
+                      </div>
+                    ) : (
+                      <div className="text-center py-8 text-gray-500 text-sm">
+                        No funds available in this plan
+                      </div>
+                    )
+                  ) : (
+                    // Sell details form
+                    <>
+                      {/* Current Holdings */}
+                      <div className="space-y-2">
+                        <p className="text-sm font-semibold text-gray-900">Current Holdings ({selectedPlan?.shortType || "RRSP"})</p>
+                        <div className="grid grid-cols-3 gap-4 text-sm">
+                          <div>
+                            <p className="text-xs text-gray-600 mb-1">Units Available</p>
+                            <p className="text-sm font-medium text-gray-900">
+                              {selectedFundProduct?.units || "0.0000"}
+                            </p>
+                          </div>
+                          <div>
+                            <p className="text-xs text-gray-600 mb-1">Price</p>
+                            <p className="text-sm font-medium text-gray-900">
+                              {selectedFundProduct?.price || "$0.00"}
+                            </p>
+                          </div>
+                          <div>
+                            <p className="text-xs text-gray-600 mb-1">Market Value</p>
+                            <p className="text-sm font-medium text-gray-900">{selectedFundProduct?.marketValue || "$0.00"}</p>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Sell Input */}
+                      <div className="space-y-4">
+                        <div>
+                          <label className="text-sm font-semibold text-gray-700 mb-2 block">
+                            Number of Units to Sell
+                          </label>
+                          <Input
+                            type="number"
+                            step="any"
+                            value={sellUnits}
+                            onChange={(e) => {
+                              const value = e.target.value;
+                              setSellUnits(value);
+                              if (value && selectedFundProduct?.price) {
+                                const price = parseFloat(selectedFundProduct.price.replace("$", "").replace(" Per Unit", ""));
+                                const maxUnits = parseFloat(selectedFundProduct?.units || "0.0000");
+                                const inputUnits = parseFloat(value);
+                                if (!isNaN(inputUnits) && price > 0) {
+                                  const unitsToUse = inputUnits > maxUnits ? maxUnits : inputUnits;
+                                  const amount = (unitsToUse * price).toFixed(2);
+                                  setSellDollarAmount(amount);
+                                } else {
+                                  setSellDollarAmount("");
+                                }
+                              } else {
+                                setSellDollarAmount("");
+                              }
+                            }}
+                            onBlur={(e) => {
+                              const value = e.target.value;
+                              if (value && selectedFundProduct?.price) {
+                                const price = parseFloat(selectedFundProduct.price.replace("$", "").replace(" Per Unit", ""));
+                                const maxUnits = parseFloat(selectedFundProduct?.units || "0.0000");
+                                const inputUnits = parseFloat(value);
+                                if (!isNaN(inputUnits) && price > 0) {
+                                  const unitsToUse = inputUnits > maxUnits ? maxUnits : inputUnits;
+                                  setSellUnits(unitsToUse.toFixed(4));
+                                  const amount = (unitsToUse * price).toFixed(2);
+                                  setSellDollarAmount(amount);
+                                }
+                              }
+                            }}
+                            placeholder={`Max: ${selectedFundProduct?.units || "0.0000"}`}
+                            className="text-lg font-semibold"
+                            max={parseFloat(selectedFundProduct?.units || "0.0000")}
+                          />
+                        </div>
+                        <div>
+                          <label className="text-sm font-semibold text-gray-700 mb-2 block">
+                            Or Dollar Amount ($)
+                          </label>
+                          <Input
+                            type="number"
+                            step="any"
+                            value={sellDollarAmount}
+                            onChange={(e) => {
+                              const value = e.target.value;
+                              setSellDollarAmount(value);
+                              if (value && selectedFundProduct?.price) {
+                                const price = parseFloat(selectedFundProduct.price.replace("$", "").replace(" Per Unit", ""));
+                                const maxUnits = parseFloat(selectedFundProduct?.units || "0.0000");
+                                const calculatedUnits = parseFloat(value) / price;
+                                const unitsToUse = calculatedUnits > maxUnits ? maxUnits : calculatedUnits;
+                                if (!isNaN(unitsToUse) && price > 0) {
+                                  setSellUnits(unitsToUse.toFixed(4));
+                                } else {
+                                  setSellUnits("");
+                                }
+                              } else {
+                                setSellUnits("");
+                              }
+                            }}
+                            placeholder="Enter dollar amount"
+                            className="text-lg font-semibold"
+                          />
+                        </div>
+                      </div>
+
+                      {/* Estimated Proceeds */}
+                      <Card className="border border-yellow-200 bg-yellow-50">
+                        <CardContent className="p-4">
+                          <div className="flex justify-between items-start mb-2">
+                            <p className="text-sm font-semibold text-gray-900">Estimated Proceeds</p>
+                            <p className="text-2xl font-bold text-gray-900">
+                              ${sellDollarAmount 
+                                ? parseFloat(sellDollarAmount).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+                                : (sellUnits && selectedFundProduct?.price
+                                  ? (parseFloat(sellUnits) * parseFloat(selectedFundProduct.price.replace("$", "").replace(" Per Unit", ""))).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+                                  : "0.00")}
+                            </p>
+                          </div>
+                          <div className="space-y-2 text-sm">
+                            <div className="flex justify-between">
+                              <span className="text-gray-600">Units to sell:</span>
+                              <span className="text-gray-900 font-medium">
+                                {sellUnits || (sellDollarAmount && selectedFundProduct?.price
+                                  ? (parseFloat(sellDollarAmount) / parseFloat(selectedFundProduct.price.replace("$", "").replace(" Per Unit", ""))).toFixed(4)
+                                  : "0.0000")}
+                              </span>
+                            </div>
+                            <div className="text-xs text-gray-600">
+                              Before fees and taxes • Based on avg. cost {selectedFundProduct?.price || "$0.00"}
+                            </div>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    </>
+                  )}
+                </div>
+                <DialogFooter className="gap-2">
+                  {selectedFundForSell && (
+                    <Button
+                      variant="outline"
+                      onClick={() => {
+                        setPlanLevelSelectedFund(null);
+                        setSellUnits("");
+                        setSellDollarAmount("");
+                      }}
+                    >
+                      Back
+                    </Button>
+                  )}
+                  <Button
+                    variant="outline"
+                    onClick={() => {
+                      setIsSellUnitsDialogOpen(false);
+                      setSellUnits("");
+                      setSellDollarAmount("");
+                      setPlanLevelSelectedFund(null);
+                      setPlanLevelFundCompany("");
+                      setPlanLevelCompanySearch("");
+                      setPlanLevelFundSearch("");
+                    }}
+                  >
+                    Cancel
+                  </Button>
+                  {selectedFundForSell && (
+                    <Button
+                      className="bg-red-600 hover:bg-red-700 text-white"
+                      disabled={!sellUnits || parseFloat(sellUnits) <= 0}
+                      onClick={() => {
+                        const price = selectedFundProduct?.price ? parseFloat(selectedFundProduct.price.replace("$", "").replace(" Per Unit", "")) : 0;
+                        const units = sellUnits || (sellDollarAmount
+                          ? (parseFloat(sellDollarAmount) / price).toFixed(4)
+                          : "0.0000");
+                        const proceeds = sellDollarAmount || (sellUnits
+                          ? (parseFloat(sellUnits) * price).toFixed(2)
+                          : "0.00");
+                        
+                        const productName = selectedFundForSell.productName || "";
+                        const displayProductName = productName.split(" Series")[0] || productName;
+                        
+                        setSellOrderDetails({
+                          product: displayProductName,
+                          units: units,
+                          price: `$${price.toFixed(2)}`,
+                          totalProceeds: `$${parseFloat(proceeds).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
+                        });
+                        
+                        setIsSellUnitsDialogOpen(false);
+                        setIsSellOrderConfirmedDialogOpen(true);
+                        setSellUnits("");
+                        setSellDollarAmount("");
+                        setPlanLevelSelectedFund(null);
+                      }}
+                    >
+                      Place Sell Order
+                    </Button>
+                  )}
+                </DialogFooter>
+              </>
+            );
+          })() : selectedProduct?.product ? (
             <>
               <DialogHeader>
                 <DialogTitle className="flex items-center gap-2 text-lg text-red-600">
@@ -12010,34 +12664,490 @@ const ClientDetails = () => {
       {/* Switch/Convert Fund Dialog */}
       <Dialog open={isSwitchDialogOpen} onOpenChange={setIsSwitchDialogOpen}>
         <DialogContent className="sm:max-w-[500px]">
-          {dialogContext === "plan" ? (
-            <>
-              <DialogHeader>
-                <DialogTitle className="flex items-center gap-2 text-lg text-blue-600">
-                  <ArrowLeftRight className="h-5 w-5 text-blue-600" />
-                  Switch Fund
-                </DialogTitle>
-                <DialogDescription className="text-[11px] text-gray-600 mt-2 leading-tight">
-                  Provide menu of funds. If user selects an existing fund, reuse account number.
-                </DialogDescription>
-              </DialogHeader>
-              <DialogFooter className="gap-2">
-                <Button
-                  variant="outline"
-                  onClick={() => {
-                    setIsSwitchDialogOpen(false);
-                    setSelectedFundCompany("");
-                    setSelectedFundToSwitch("");
-                    setUnitsToSwitch("");
-                    setCompanySearchTerm("");
-                    setFundSearchTerm("");
-                  }}
-                >
-                  Cancel
-                </Button>
-              </DialogFooter>
-            </>
-          ) : selectedProduct?.product ? (() => {
+          {dialogContext === "plan" ? (() => {
+            // Find plan by accountNumber
+            const currentPlan = plansList.find(p => p.accountNumber === selectedPlan?.accountNumber);
+            const planInvestments = currentPlan ? getPlanInvestments(currentPlan.id) : [];
+            const existingFunds = planInvestments.map(fundId => getFundAccountById(fundId)).filter(Boolean);
+            
+            // Filter out the "From" fund from the "To" fund selection
+            const availableToFunds = planSwitchStep === "to" && planSwitchFromFund
+              ? existingFunds.filter(fund => fund.id !== planSwitchFromFund.id)
+              : existingFunds;
+            
+            // Determine if switch or conversion based on company matching
+            const fromFundCompany = planSwitchFromFund ? getProductCompany(planSwitchFromFund) : "";
+            const toFundCompany = planSwitchToFund?.isExisting 
+              ? getProductCompany(planSwitchToFund)
+              : (planSwitchToFund && planLevelFundCompany ? planLevelFundCompany : "");
+            const isConvert = fromFundCompany && toFundCompany && fromFundCompany !== toFundCompany;
+            const isSwitch = fromFundCompany && toFundCompany && fromFundCompany === toFundCompany;
+            
+            // Get From fund product data
+            const fromFundProduct = planSwitchFromFund ? {
+              product: planSwitchFromFund.productName || "",
+              units: planSwitchFromFund.currentPrice ? (() => {
+                const price = parseFloat(planSwitchFromFund.currentPrice.replace(/[^0-9.]/g, ''));
+                const marketValue = parseFloat(planSwitchFromFund.marketValue.replace(/[^0-9.]/g, ''));
+                return price > 0 ? (marketValue / price).toFixed(4) : "0.0000";
+              })() : "0.0000",
+              price: planSwitchFromFund.currentPrice || "$0.00",
+              marketValue: planSwitchFromFund.marketValue || "$0.00",
+            } : null;
+            
+            // Get To fund name
+            const toFundName = planSwitchToFund?.isExisting 
+              ? planSwitchToFund.productName 
+              : (planSwitchToFund?.name || "");
+            
+            return (
+              <>
+                <DialogHeader>
+                  <DialogTitle className={`flex items-center gap-2 text-lg ${isConvert ? "text-orange-600" : "text-blue-600"}`}>
+                    <ArrowLeftRight className={`h-5 w-5 ${isConvert ? "text-orange-600" : "text-blue-600"}`} />
+                    {planSwitchStep === "details" ? (isConvert ? "Convert Fund" : "Switch Fund") : "Switch Fund"}
+                  </DialogTitle>
+                  <DialogDescription className="text-[11px] text-gray-600 mt-2 leading-tight">
+                    {planSwitchStep === "from" 
+                      ? "Select the fund to switch from (existing funds only)"
+                      : planSwitchStep === "to"
+                      ? `Switch from ${planSwitchFromFund?.productName || ""} to another fund. Choose an existing fund or select a new fund to add.`
+                      : isConvert
+                      ? `Convert from ${planSwitchFromFund?.productName || ""} (${fromFundCompany}) to ${toFundName} (${toFundCompany})`
+                      : `Switch from ${planSwitchFromFund?.productName || ""} to ${toFundName}`}
+                  </DialogDescription>
+                </DialogHeader>
+                {planSwitchStep === "from" ? (
+                  <>
+                    <div className="space-y-4 py-4">
+                      {existingFunds.length > 0 ? (
+                        <div>
+                          <Label className="text-sm font-semibold text-gray-700 mb-2 block">
+                            Select Fund to Switch From
+                          </Label>
+                          <ScrollArea className="h-64 border border-gray-200 rounded-md p-2">
+                            <div className="space-y-1">
+                              {existingFunds.map((fund) => (
+                                <Card
+                                  key={fund.id}
+                                  className={`border cursor-pointer transition-colors ${
+                                    planSwitchFromFund?.id === fund.id
+                                      ? "border-blue-500 bg-blue-50"
+                                      : "border-gray-200 bg-gray-50 hover:bg-gray-100"
+                                  }`}
+                                  onClick={() => {
+                                    setPlanSwitchFromFund(fund);
+                                  }}
+                                >
+                                  <CardContent className="p-2">
+                                    <p className="text-xs font-semibold text-gray-900">{fund.productName}</p>
+                                    <p className="text-[10px] text-gray-600">Account: {fund.accountNumber || fund.id}</p>
+                                  </CardContent>
+                                </Card>
+                              ))}
+                            </div>
+                          </ScrollArea>
+                        </div>
+                      ) : (
+                        <div className="text-center py-8 text-gray-500 text-sm">
+                          No funds available in this plan
+                        </div>
+                      )}
+                    </div>
+                    <DialogFooter className="gap-2">
+                      <Button
+                        variant="outline"
+                        onClick={() => {
+                          setIsSwitchDialogOpen(false);
+                          setPlanSwitchFromFund(null);
+                          setPlanSwitchToFund(null);
+                          setPlanLevelFundCompany("");
+                          setPlanLevelCompanySearch("");
+                          setPlanLevelFundSearch("");
+                          setPlanSwitchUnits("");
+                          setPlanSwitchStep("from");
+                        }}
+                      >
+                        Cancel
+                      </Button>
+                      {planSwitchFromFund && (
+                        <Button
+                          className="bg-blue-600 hover:bg-blue-700 text-white"
+                          onClick={() => {
+                            setPlanSwitchStep("to");
+                            setPlanSwitchToFund(null);
+                            setPlanLevelFundCompany("");
+                            setPlanLevelCompanySearch("");
+                            setPlanLevelFundSearch("");
+                          }}
+                        >
+                          Next
+                        </Button>
+                      )}
+                    </DialogFooter>
+                  </>
+                ) : planSwitchStep === "to" ? (
+                  <>
+                    <div className="space-y-4 py-4">
+                      {/* Selected From Fund Display */}
+                      {planSwitchFromFund && (
+                        <Card className="border border-gray-200 bg-gray-50">
+                          <CardContent className="p-3">
+                            <p className="text-xs font-semibold text-gray-700 mb-1">From Fund:</p>
+                            <p className="text-sm font-semibold text-gray-900">{planSwitchFromFund.productName}</p>
+                            <p className="text-[10px] text-gray-600">Account: {planSwitchFromFund.accountNumber || planSwitchFromFund.id}</p>
+                          </CardContent>
+                        </Card>
+                      )}
+
+                      {/* Select Fund Company for To Fund */}
+                      <div className="relative">
+                        <Label className="text-sm font-semibold text-gray-700 mb-2 block">
+                          Select Fund Company
+                        </Label>
+                        <div className="relative">
+                          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400 z-10" />
+                          <Input
+                            type="text"
+                            value={planLevelFundCompany || planLevelCompanySearch}
+                            onChange={(e) => {
+                              const search = e.target.value;
+                              setPlanLevelCompanySearch(search);
+                              if (search !== planLevelFundCompany) {
+                                setPlanLevelFundCompany("");
+                                setPlanSwitchToFund(null);
+                                setPlanLevelFundSearch("");
+                              }
+                            }}
+                            onFocus={() => {
+                              if (planLevelFundCompany) {
+                                setPlanLevelCompanySearch(planLevelFundCompany);
+                              }
+                            }}
+                            placeholder="Select fund company"
+                            className="pl-10"
+                          />
+                        </div>
+                        {planLevelCompanySearch && !planLevelFundCompany && (
+                          <div className="absolute z-50 w-full mt-1 max-h-56 overflow-y-auto border border-gray-200 rounded-md bg-white shadow-lg p-1.5">
+                            <div className="space-y-0.5">
+                              {FUND_COMPANIES
+                                .filter((company) =>
+                                  company.name.toLowerCase().includes(planLevelCompanySearch.toLowerCase())
+                                )
+                                .sort((a, b) => a.name.localeCompare(b.name))
+                                .map((company) => {
+                                  const isSameCompany = company.name === fromFundCompany;
+                                  return (
+                                    <Card
+                                      key={company.id}
+                                      className={`border cursor-pointer transition-colors ${
+                                        isSameCompany 
+                                          ? "border-blue-500 bg-blue-50"
+                                          : "border-orange-500 bg-orange-50"
+                                      }`}
+                                      onClick={() => {
+                                        setPlanLevelFundCompany(company.name);
+                                        setPlanLevelCompanySearch("");
+                                        setPlanSwitchToFund(null);
+                                        setPlanLevelFundSearch("");
+                                      }}
+                                    >
+                                      <CardContent className="p-2 flex items-center justify-between">
+                                        <div>
+                                          <p className="text-xs font-semibold text-gray-900">{company.name}</p>
+                                          <p className="text-[10px] text-gray-600">{company.fundsCount} funds available</p>
+                                        </div>
+                                        {isSameCompany ? (
+                                          <Badge className="bg-blue-100 text-blue-800 hover:bg-blue-100 font-normal px-1.5 py-0.5 text-[10px]">
+                                            Switch
+                                          </Badge>
+                                        ) : (
+                                          <Badge className="bg-orange-100 text-orange-800 hover:bg-orange-100 font-normal px-1.5 py-0.5 text-[10px]">
+                                            Convert
+                                          </Badge>
+                                        )}
+                                      </CardContent>
+                                    </Card>
+                                  );
+                                })}
+                            </div>
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Select To Fund */}
+                      {planLevelFundCompany ? (
+                        <div className="relative">
+                          <Label className="text-sm font-semibold text-gray-700 mb-2 block">
+                            Select Fund
+                          </Label>
+                          <div className="relative">
+                            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400 z-10" />
+                            <Input
+                              type="text"
+                              value={planSwitchToFund?.name || ""}
+                              onChange={(e) => {
+                                const search = e.target.value;
+                                setPlanLevelFundSearch(search);
+                                if (search !== planSwitchToFund?.name) {
+                                  setPlanSwitchToFund(null);
+                                }
+                              }}
+                              placeholder={`Search ${planLevelFundCompany} funds by name, symbol, or category`}
+                              className={`pl-10 ${planSwitchToFund ? (isConvert ? "bg-orange-50 border-orange-300" : "bg-blue-50 border-blue-300") : ""}`}
+                            />
+                          </div>
+                          {planLevelFundSearch && !planSwitchToFund && COMPANY_FUNDS[planLevelFundCompany] && (
+                            <div className="absolute z-50 w-full mt-1 max-h-56 overflow-y-auto border border-gray-200 rounded-md bg-white shadow-lg p-1.5">
+                              <div className="space-y-0.5">
+                                {COMPANY_FUNDS[planLevelFundCompany]
+                                  .filter((fund) =>
+                                    fund.name.toLowerCase().includes(planLevelFundSearch.toLowerCase()) ||
+                                    fund.symbol.toLowerCase().includes(planLevelFundSearch.toLowerCase()) ||
+                                    fund.category.toLowerCase().includes(planLevelFundSearch.toLowerCase())
+                                  )
+                                  .sort((a, b) => a.name.localeCompare(b.name))
+                                  .map((fund, index) => (
+                                    <Card
+                                      key={index}
+                                      className={`border cursor-pointer transition-colors ${
+                                        planSwitchToFund?.name === fund.name
+                                          ? isConvert
+                                            ? "border-orange-500 bg-orange-50"
+                                            : "border-blue-500 bg-blue-50"
+                                          : "border-gray-200 bg-gray-50 hover:bg-gray-100"
+                                      }`}
+                                      onClick={() => {
+                                        setPlanSwitchToFund(fund);
+                                        setPlanLevelFundSearch("");
+                                      }}
+                                    >
+                                      <CardContent className="p-2">
+                                        <p className="text-xs font-semibold text-gray-900">{fund.name}</p>
+                                        <p className="text-[10px] text-gray-600">{fund.symbol} • {fund.category}</p>
+                                      </CardContent>
+                                    </Card>
+                                  ))}
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      ) : availableToFunds.length > 0 && (
+                        <div>
+                          <Label className="text-sm font-semibold text-gray-700 mb-2 block">
+                            Or Select Existing Fund in Plan
+                          </Label>
+                          <ScrollArea className="h-32 border border-gray-200 rounded-md p-2">
+                            <div className="space-y-1">
+                              {availableToFunds.map((fund) => {
+                                const fundCompany = getProductCompany(fund);
+                                const isFundConvert = fromFundCompany && fundCompany !== fromFundCompany;
+                                return (
+                                  <Card
+                                    key={fund.id}
+                                    className={`border cursor-pointer transition-colors ${
+                                      planSwitchToFund?.id === fund.id
+                                        ? isFundConvert
+                                          ? "border-orange-500 bg-orange-50"
+                                          : "border-blue-500 bg-blue-50"
+                                        : "border-gray-200 bg-gray-50 hover:bg-gray-100"
+                                    }`}
+                                    onClick={() => {
+                                      setPlanSwitchToFund({ ...fund, isExisting: true });
+                                      setPlanLevelFundCompany("");
+                                      setPlanLevelCompanySearch("");
+                                      setPlanLevelFundSearch("");
+                                    }}
+                                  >
+                                    <CardContent className="p-2">
+                                      <p className="text-xs font-semibold text-gray-900">{fund.productName}</p>
+                                      <p className="text-[10px] text-gray-600">Account: {fund.accountNumber || fund.id}</p>
+                                    </CardContent>
+                                  </Card>
+                                );
+                              })}
+                            </div>
+                          </ScrollArea>
+                        </div>
+                      )}
+                    </div>
+                    <DialogFooter className="gap-2">
+                      <Button
+                        variant="outline"
+                        onClick={() => {
+                          setPlanSwitchStep("from");
+                          setPlanSwitchToFund(null);
+                          setPlanLevelFundCompany("");
+                          setPlanLevelCompanySearch("");
+                          setPlanLevelFundSearch("");
+                        }}
+                      >
+                        Back
+                      </Button>
+                      <Button
+                        variant="outline"
+                        onClick={() => {
+                          setIsSwitchDialogOpen(false);
+                          setPlanSwitchFromFund(null);
+                          setPlanSwitchToFund(null);
+                          setPlanLevelFundCompany("");
+                          setPlanLevelCompanySearch("");
+                          setPlanLevelFundSearch("");
+                          setPlanSwitchUnits("");
+                          setPlanSwitchStep("from");
+                        }}
+                      >
+                        Cancel
+                      </Button>
+                      {planSwitchToFund && (
+                        <Button
+                          className="bg-blue-600 hover:bg-blue-700 text-white"
+                          onClick={() => {
+                            setPlanSwitchStep("details");
+                            setPlanSwitchUnits("");
+                          }}
+                        >
+                          Next
+                        </Button>
+                      )}
+                    </DialogFooter>
+                  </>
+                ) : (
+                  <>
+                    <div className="space-y-4 py-4">
+                      {/* Current Fund (From) */}
+                      <Card className="border border-gray-200 bg-gray-50">
+                        <CardContent className="p-4">
+                          <p className="text-sm font-semibold text-gray-900 mb-3">Current Fund ({selectedPlan?.shortType || "RESP"}):</p>
+                          <p className="text-sm font-bold text-gray-900 mb-2">
+                            {fromFundProduct?.product?.split(" Series")[0] || planSwitchFromFund?.productName || ""}
+                          </p>
+                          <div className="space-y-1 text-sm text-gray-600">
+                            <div>Company: {fromFundCompany}</div>
+                            <div>Units Available: {fromFundProduct?.units || "0.0000"}</div>
+                            <div>Market Value: {fromFundProduct?.marketValue || "$0.00"}</div>
+                          </div>
+                        </CardContent>
+                      </Card>
+
+                      {/* Units to Switch/Convert */}
+                      <div>
+                        <Label className="text-sm font-semibold text-gray-700 mb-2 block">
+                          Units to {isConvert ? "Convert" : "Switch"}
+                        </Label>
+                        <Input
+                          type="number"
+                          step="any"
+                          value={planSwitchUnits}
+                          onChange={(e) => setPlanSwitchUnits(e.target.value)}
+                          placeholder={`Max: ${fromFundProduct?.units || "0.0000"}`}
+                          max={parseFloat(fromFundProduct?.units || "0.0000")}
+                          className="text-lg font-semibold"
+                        />
+                      </div>
+
+                      {/* Switch/Convert Preview */}
+                      <Card className={`border ${isConvert ? "border-orange-200 bg-orange-50" : "border-blue-200 bg-blue-50"}`}>
+                        <CardContent className="p-4">
+                          <div className="flex items-center gap-2 mb-2">
+                            <Badge className={`${isConvert ? "bg-orange-200 text-orange-900" : "bg-blue-200 text-blue-900"} font-semibold px-2 py-0.5 text-xs`}>
+                              {isConvert ? "CONVERSION" : "SWITCH"}
+                            </Badge>
+                            <span className={`text-xs font-bold ${isConvert ? "text-orange-900" : "text-blue-900"}`}>
+                              ({fromFundProduct?.product?.split(" Series")[0] || planSwitchFromFund?.productName || ""}) → ({toFundName || "Select fund"})
+                            </span>
+                          </div>
+                          <div className={`space-y-1 text-sm ${isConvert ? "text-orange-700" : "text-blue-700"}`}>
+                            <div className="flex justify-between">
+                              <span>Units to {isConvert ? "convert" : "switch"}:</span>
+                              <span className="font-medium">{planSwitchUnits || "0"}</span>
+                            </div>
+                            <div className="flex justify-between">
+                              <span>Estimated value:</span>
+                              <span className="font-medium">
+                                $
+                                {planSwitchUnits && fromFundProduct?.price
+                                  ? (parseFloat(planSwitchUnits) * parseFloat(fromFundProduct.price.replace("$", "").replace(" Per Unit", ""))).toFixed(2)
+                                  : "0.00"}
+                              </span>
+                            </div>
+                          </div>
+                          <p className={`text-sm mt-2 ${isConvert ? "text-orange-600" : "text-blue-600"}`}>
+                            This will {isConvert ? "convert" : "switch"} {fromFundProduct?.product?.split(" Series")[0] || planSwitchFromFund?.productName || ""} to {toFundName || "selected fund"}
+                          </p>
+                        </CardContent>
+                      </Card>
+                    </div>
+                    <DialogFooter className="gap-2">
+                      <Button
+                        variant="outline"
+                        onClick={() => {
+                          setPlanSwitchStep("to");
+                        }}
+                      >
+                        Back
+                      </Button>
+                      <Button
+                        variant="outline"
+                        onClick={() => {
+                          setIsSwitchDialogOpen(false);
+                          setPlanSwitchFromFund(null);
+                          setPlanSwitchToFund(null);
+                          setPlanLevelFundCompany("");
+                          setPlanLevelCompanySearch("");
+                          setPlanLevelFundSearch("");
+                          setPlanSwitchUnits("");
+                          setPlanSwitchStep("from");
+                        }}
+                      >
+                        Cancel
+                      </Button>
+                      <Button
+                        className={`${isConvert ? "bg-orange-600 hover:bg-orange-700" : "bg-blue-600 hover:bg-blue-700"} text-white`}
+                        disabled={!planSwitchUnits || parseFloat(planSwitchUnits) <= 0}
+                        onClick={() => {
+                          const estimatedValue = planSwitchUnits && fromFundProduct?.price
+                            ? (parseFloat(planSwitchUnits) * parseFloat(fromFundProduct.price.replace("$", "").replace(" Per Unit", ""))).toFixed(2)
+                            : "0.00";
+                          
+                          if (isConvert) {
+                            setConvertOrderDetails({
+                              from: fromFundProduct?.product?.split(" Series")[0] || planSwitchFromFund?.productName || "",
+                              to: toFundName || "",
+                              units: planSwitchUnits || "0",
+                              estimatedValue: `$${estimatedValue}`,
+                            });
+                            setIsSwitchDialogOpen(false);
+                            setIsConvertOrderConfirmedDialogOpen(true);
+                          } else {
+                            setSwitchOrderDetails({
+                              from: fromFundProduct?.product?.split(" Series")[0] || planSwitchFromFund?.productName || "",
+                              to: toFundName || "",
+                              units: planSwitchUnits || "0",
+                              estimatedValue: `$${estimatedValue}`,
+                            });
+                            setIsSwitchDialogOpen(false);
+                            setIsSwitchOrderConfirmedDialogOpen(true);
+                          }
+                          
+                          setPlanSwitchFromFund(null);
+                          setPlanSwitchToFund(null);
+                          setPlanLevelFundCompany("");
+                          setPlanLevelCompanySearch("");
+                          setPlanLevelFundSearch("");
+                          setPlanSwitchUnits("");
+                          setPlanSwitchStep("from");
+                        }}
+                      >
+                        Place {isConvert ? "Conversion" : "Switch"} Order
+                      </Button>
+                    </DialogFooter>
+                  </>
+                )}
+              </>
+            );
+          })() : selectedProduct?.product ? (() => {
             const currentProductCompany = getProductCompany(selectedProduct);
             const isSwitch = selectedFundCompany ? selectedFundCompany === currentProductCompany : true;
             const isConvert = selectedFundCompany && selectedFundCompany !== currentProductCompany;
