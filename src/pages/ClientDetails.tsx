@@ -7494,7 +7494,37 @@ const ClientDetails = () => {
                                   title="Buy more units"
                                   onClick={(e) => {
                                     e.stopPropagation();
-                                    // Add buy action handler here
+                                    if (selectedFundAccountData) {
+                                      const priceStr = selectedFundAccountData.currentPrice || "$0.00";
+                                      const price = parseFloat(priceStr.replace(/[^0-9.]/g, '')) || 0;
+                                      const marketValueNum = parseFloat(selectedFundAccountData.marketValue.replace(/[^0-9.]/g, ''));
+                                      const units = price > 0 ? (marketValueNum / price) : 0;
+                                      const marketValueFormatted = marketValueNum.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                                      
+                                      // Find the plan that contains this fund account
+                                      const planData = Object.values(clientData.summaryData).find((p: any) => 
+                                        p.investments && p.investments.includes(selectedFundAccount)
+                                      ) as any;
+                                      const plan = planData ? plansList.find(p => p.id === planData.id) : null;
+                                      const planInvestments = planData ? getPlanInvestments(planData.id) : [];
+                                      const planBalance = getPlanTotalValue(planInvestments);
+                                      
+                                      setDialogContext("fund");
+                                      setSelectedProduct({
+                                        product: selectedFundAccountData.productName,
+                                        units: units > 0 ? units.toFixed(2) : "0.00",
+                                        price: price > 0 ? `$${price.toFixed(2)}` : "$0.00",
+                                        marketValue: `$${marketValueFormatted}`
+                                      });
+                                      setSelectedPlan({
+                                        shortType: plan?.type || "RRSP",
+                                        accountNumber: plan?.accountNumber || ""
+                                      });
+                                      setSelectedPlanBalance(planBalance);
+                                      setInvestmentAmount("");
+                                      setNumberOfUnits("");
+                                      setIsBuyUnitsDialogOpen(true);
+                                    }
                                   }}
                                 >
                                   <Plus className="h-4 w-4" />
@@ -7506,7 +7536,37 @@ const ClientDetails = () => {
                                   title="Sell units"
                                   onClick={(e) => {
                                     e.stopPropagation();
-                                    // Add sell action handler here
+                                    if (selectedFundAccountData) {
+                                      const priceStr = selectedFundAccountData.currentPrice || "$0.00";
+                                      const price = parseFloat(priceStr.replace(/[^0-9.]/g, '')) || 0;
+                                      const marketValueNum = parseFloat(selectedFundAccountData.marketValue.replace(/[^0-9.]/g, ''));
+                                      const units = price > 0 ? (marketValueNum / price) : 0;
+                                      const marketValueFormatted = marketValueNum.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                                      
+                                      // Find the plan that contains this fund account
+                                      const planData = Object.values(clientData.summaryData).find((p: any) => 
+                                        p.investments && p.investments.includes(selectedFundAccount)
+                                      ) as any;
+                                      const plan = planData ? plansList.find(p => p.id === planData.id) : null;
+                                      const planInvestments = planData ? getPlanInvestments(planData.id) : [];
+                                      const planBalance = getPlanTotalValue(planInvestments);
+                                      
+                                      setDialogContext("fund");
+                                      setSelectedProduct({
+                                        product: selectedFundAccountData.productName,
+                                        units: units > 0 ? units.toFixed(2) : "0.00",
+                                        price: price > 0 ? `$${price.toFixed(2)}` : "$0.00",
+                                        marketValue: `$${marketValueFormatted}`
+                                      });
+                                      setSelectedPlan({
+                                        shortType: plan?.type || "RRSP",
+                                        accountNumber: plan?.accountNumber || ""
+                                      });
+                                      setSelectedPlanBalance(planBalance);
+                                      setSellUnits("");
+                                      setSellDollarAmount("");
+                                      setIsSellUnitsDialogOpen(true);
+                                    }
                                   }}
                                 >
                                   <Minus className="h-4 w-4" />
@@ -7518,7 +7578,41 @@ const ClientDetails = () => {
                                   title="Switch/Conversion"
                                   onClick={(e) => {
                                     e.stopPropagation();
-                                    // Add switch action handler here
+                                    if (selectedFundAccountData) {
+                                      const priceStr = selectedFundAccountData.currentPrice || "$0.00";
+                                      const price = parseFloat(priceStr.replace(/[^0-9.]/g, '')) || 0;
+                                      const marketValueNum = parseFloat(selectedFundAccountData.marketValue.replace(/[^0-9.]/g, ''));
+                                      const units = price > 0 ? (marketValueNum / price) : 0;
+                                      const marketValueFormatted = marketValueNum.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                                      
+                                      // Find the plan that contains this fund account
+                                      const planData = Object.values(clientData.summaryData).find((p: any) => 
+                                        p.investments && p.investments.includes(selectedFundAccount)
+                                      ) as any;
+                                      const plan = planData ? plansList.find(p => p.id === planData.id) : null;
+                                      const planInvestments = planData ? getPlanInvestments(planData.id) : [];
+                                      const planBalance = getPlanTotalValue(planInvestments);
+                                      
+                                      setDialogContext("fund");
+                                      setSelectedProduct({
+                                        product: selectedFundAccountData.productName,
+                                        units: units > 0 ? units.toFixed(2) : "0.00",
+                                        price: price > 0 ? `$${price.toFixed(2)}` : "$0.00",
+                                        marketValue: `$${marketValueFormatted}`,
+                                        supplier: selectedFundAccountData.supplier
+                                      });
+                                      setSelectedPlan({
+                                        shortType: plan?.type || "RRSP",
+                                        accountNumber: plan?.accountNumber || ""
+                                      });
+                                      setSelectedPlanBalance(planBalance);
+                                      setSelectedFundCompany("");
+                                      setSelectedFundToSwitch("");
+                                      setUnitsToSwitch("");
+                                      setCompanySearchTerm("");
+                                      setFundSearchTerm("");
+                                      setIsSwitchDialogOpen(true);
+                                    }
                                   }}
                                 >
                                   <ArrowLeftRight className="h-4 w-4" />
@@ -8652,7 +8746,26 @@ const ClientDetails = () => {
                               title="Buy more units"
                               onClick={(e) => {
                                 e.stopPropagation();
-                                // Add buy action handler here
+                                if (selectedPlanData) {
+                                  const planInvestments = getPlanInvestments(selectedPlanData.id);
+                                  const planTotal = getPlanTotalValue(planInvestments);
+                                  
+                                  setDialogContext("plan");
+                                  setSelectedProduct(null);
+                                  setSelectedPlan({
+                                    shortType: selectedPlanData.type || "RRSP",
+                                    accountNumber: selectedPlanData.accountNumber || ""
+                                  });
+                                  setSelectedPlanBalance(planTotal);
+                                  setInvestmentAmount("");
+                                  setNumberOfUnits("");
+                                  setPlanLevelSelectedFund(null);
+                                  setPlanLevelFundCompany("");
+                                  setPlanLevelCompanySearch("");
+                                  setPlanLevelFundSearch("");
+                                  setPlanBuyStep("select");
+                                  setIsBuyUnitsDialogOpen(true);
+                                }
                               }}
                             >
                               <Plus className="h-4 w-4" />
@@ -8664,7 +8777,25 @@ const ClientDetails = () => {
                               title="Sell units"
                               onClick={(e) => {
                                 e.stopPropagation();
-                                // Add sell action handler here
+                                if (selectedPlanData) {
+                                  const planInvestments = getPlanInvestments(selectedPlanData.id);
+                                  const planTotal = getPlanTotalValue(planInvestments);
+                                  
+                                  setDialogContext("plan");
+                                  setSelectedProduct(null);
+                                  setSelectedPlan({
+                                    shortType: selectedPlanData.type || "RRSP",
+                                    accountNumber: selectedPlanData.accountNumber || ""
+                                  });
+                                  setSelectedPlanBalance(planTotal);
+                                  setSellUnits("");
+                                  setSellDollarAmount("");
+                                  setPlanLevelSelectedFund(null);
+                                  setPlanLevelFundCompany("");
+                                  setPlanLevelCompanySearch("");
+                                  setPlanLevelFundSearch("");
+                                  setIsSellUnitsDialogOpen(true);
+                                }
                               }}
                             >
                               <Minus className="h-4 w-4" />
@@ -8676,7 +8807,31 @@ const ClientDetails = () => {
                               title="Switch/Conversion"
                               onClick={(e) => {
                                 e.stopPropagation();
-                                // Add switch action handler here
+                                if (selectedPlanData) {
+                                  const planInvestments = getPlanInvestments(selectedPlanData.id);
+                                  const planTotal = getPlanTotalValue(planInvestments);
+                                  
+                                  setDialogContext("plan");
+                                  setSelectedProduct(null);
+                                  setSelectedPlan({
+                                    shortType: selectedPlanData.type || "RRSP",
+                                    accountNumber: selectedPlanData.accountNumber || ""
+                                  });
+                                  setSelectedPlanBalance(planTotal);
+                                  setSelectedFundCompany("");
+                                  setSelectedFundToSwitch("");
+                                  setUnitsToSwitch("");
+                                  setCompanySearchTerm("");
+                                  setFundSearchTerm("");
+                                  setPlanLevelSelectedFund(null);
+                                  setPlanLevelFundCompany("");
+                                  setPlanLevelCompanySearch("");
+                                  setPlanLevelFundSearch("");
+                                  setPlanSwitchFromFund(null);
+                                  setPlanSwitchToFund(null);
+                                  setPlanSwitchStep("from");
+                                  setIsSwitchDialogOpen(true);
+                                }
                               }}
                             >
                               <ArrowLeftRight className="h-4 w-4" />
