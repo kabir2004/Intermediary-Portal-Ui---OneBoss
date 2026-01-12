@@ -14288,6 +14288,10 @@ const ClientDetails = () => {
                     });
                     
                     setPlanSetupStep(0);
+                    setAddProductFundCompany("");
+                    setAddProductFundSearch("");
+                    setAddProductSelectedFund("");
+                    setAddProductAmount("");
                     setIsAddProductOpen(true);
                   }
                 }}
@@ -14301,59 +14305,58 @@ const ClientDetails = () => {
       )}
 
       {/* Add Product Dialog */}
-      <Dialog open={isAddProductOpen} onOpenChange={setIsAddProductOpen}>
-        <DialogContent className="sm:max-w-[500px]">
-          <DialogHeader className="pb-2">
-            <DialogTitle className="flex items-center gap-2 text-sm text-blue-600">
-              <Plus className="h-3.5 w-3.5 text-blue-600" />
-              Add Product
-            </DialogTitle>
+      <Dialog open={isAddProductOpen} onOpenChange={(open) => {
+        setIsAddProductOpen(open);
+        if (!open) {
+          setAddProductFundCompany("");
+          setAddProductFundSearch("");
+          setAddProductSelectedFund("");
+          setAddProductAmount("");
+        }
+      }}>
+        <DialogContent className="sm:max-w-[600px]">
+          <DialogHeader className="pb-1">
+            <DialogTitle className="text-sm font-semibold">Add Product</DialogTitle>
           </DialogHeader>
           <div className="space-y-2 py-1">
-            {/* New Plan Created Successfully */}
-            <Card className="border border-blue-200 bg-blue-50">
-              <CardContent className="p-2">
-                <div className="flex items-center gap-1.5 mb-1.5">
-                  <CheckCircle2 className="h-3.5 w-3.5 text-green-600" />
-                  <p className="text-xs font-bold text-gray-900">New Plan Created Successfully!</p>
-                </div>
-                <div className="grid grid-cols-2 gap-x-4 gap-y-0.5 text-[10px] text-gray-700">
-                  <div><span className="font-semibold">Plan Type:</span> {createdPlanDetails?.planType}</div>
-                  <div><span className="font-semibold">Plan ID:</span> {createdPlanDetails?.planId}</div>
-                  <div><span className="font-semibold">Account Number:</span> {createdPlanDetails?.accountNumber}</div>
-                  <div><span className="font-semibold">Owner:</span> {createdPlanDetails?.owner}</div>
-                </div>
-                <div className="flex items-center gap-1 mt-1.5 text-blue-600">
-                  <Plus className="h-3 w-3" />
-                  <span className="text-[10px] font-medium">Add your first investment to this plan below</span>
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Trust Account CAD */}
-            <Card className="border border-blue-200 bg-blue-50">
-              <CardContent className="p-2">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-[10px] text-gray-600">$ Trust Account CAD</p>
-                    <p className="text-lg font-bold text-gray-900">$1,250.00</p>
-                  </div>
-                  <div className="text-right space-y-0.5">
-                    <div className="flex justify-between gap-4 text-[10px]">
-                      <span className="text-gray-600">Settled:</span>
-                      <span className="text-green-600 font-medium">$1,250.00</span>
-                    </div>
-                    <div className="flex justify-between gap-4 text-[10px]">
-                      <span className="text-gray-600">Unsettled:</span>
-                      <span className="text-orange-600 font-medium">$0.00</span>
-                    </div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Select Fund Company and Search - Side by Side */}
+            {/* Plan Details and Trust Account - Side by Side */}
             <div className="grid grid-cols-2 gap-2">
+              {/* Plan Details */}
+              <Card className="border border-gray-200 bg-white">
+                <CardContent className="p-2">
+                  <p className="text-[10px] text-gray-500 mb-0.5">Plan</p>
+                  <p className="text-xs font-semibold text-gray-900 mb-1.5">
+                    {createdPlanDetails?.planType || "TFSA"} - {createdPlanDetails?.planId?.slice(-8) || "12345678"}
+                  </p>
+                  <div className="space-y-1 text-[10px]">
+                    <div><span className="text-gray-500">Account:</span> <span className="font-medium">{createdPlanDetails?.accountNumber || "1234567890"}</span></div>
+                    <div><span className="text-gray-500">Owner:</span> <span className="font-medium">{createdPlanDetails?.owner || "John Smith"}</span></div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Trust Account Balance */}
+              <Card className="border border-gray-200 bg-white">
+                <CardContent className="p-2">
+                  <p className="text-[10px] text-gray-500 mb-0.5">Trust Account CAD</p>
+                  <p className="text-sm font-bold text-gray-900 mb-1.5">$1,250.00</p>
+                  <div className="space-y-0.5 text-[10px]">
+                    <div className="flex justify-between">
+                      <span className="text-gray-500">Settled:</span>
+                      <span className="font-medium text-green-600">$1,250.00</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-500">Unsettled:</span>
+                      <span className="font-medium text-orange-600">$0.00</span>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* Fund Selection - Side by Side */}
+            <div className="grid grid-cols-2 gap-2">
+              {/* Select Fund Company */}
               <div>
                 <Label className="text-[10px] font-semibold text-gray-700 mb-1 block">
                   Select Fund Company
@@ -14371,6 +14374,8 @@ const ClientDetails = () => {
                   </SelectContent>
                 </Select>
               </div>
+
+              {/* Investment Amount */}
               <div>
                 <Label className="text-[10px] font-semibold text-gray-700 mb-1 block">
                   Investment Amount ($)
@@ -14406,7 +14411,7 @@ const ClientDetails = () => {
                   className="pl-8 h-8 text-xs"
                 />
               </div>
-              {addProductFundCompany && addProductFundSearch && COMPANY_FUNDS[addProductFundCompany] && (
+              {!addProductSelectedFund && addProductFundCompany && addProductFundSearch && COMPANY_FUNDS[addProductFundCompany] && (
                 <div className="mt-1 space-y-0.5 max-h-32 overflow-y-auto">
                   {COMPANY_FUNDS[addProductFundCompany]
                     .filter((fund) =>
@@ -14438,19 +14443,17 @@ const ClientDetails = () => {
             </div>
 
             {/* Order Preview */}
-            <Card className="border border-blue-200 bg-blue-50">
+            <Card className="border border-gray-200 bg-white">
               <CardContent className="p-2">
-                <div className="flex items-start justify-between gap-4">
-                  <div className="flex-1">
-                    <p className="text-[10px] font-semibold text-blue-900 mb-1">Order Preview</p>
-                    <div className="space-y-0.5 text-[10px] text-blue-700">
-                      <div><span className="font-semibold">Fund:</span> {addProductSelectedFund || "Not selected"}</div>
-                      <div><span className="font-semibold">Amount:</span> ${addProductAmount || "0"}</div>
-                    </div>
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <p className="text-[10px] text-gray-500 mb-0.5">Fund</p>
+                    <p className="text-xs font-medium text-gray-900">{addProductSelectedFund || "Not selected"}</p>
                   </div>
-                  <p className="text-[9px] text-blue-600 flex-1">
-                    This will purchase the selected fund with the specified amount.
-                  </p>
+                  <div className="text-right">
+                    <p className="text-[10px] text-gray-500 mb-0.5">Amount</p>
+                    <p className="text-xs font-bold text-gray-900">${addProductAmount || "0.00"}</p>
+                  </div>
                 </div>
                 {addProductAmount && parseFloat(addProductAmount) > 1250 && (
                   <div className="flex items-center gap-1 mt-1.5 text-orange-600">
@@ -14461,7 +14464,7 @@ const ClientDetails = () => {
               </CardContent>
             </Card>
           </div>
-          <DialogFooter className="pt-2">
+          <DialogFooter className="pt-1">
             <Button variant="outline" size="sm" className="h-8 text-xs" onClick={() => setIsAddProductOpen(false)}>
               Cancel
             </Button>
