@@ -3241,34 +3241,34 @@ export default function Plans() {
                             <div className="space-y-4">
                           {/* Investment Summary and Trading Actions Tiles */}
                           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 items-stretch">
-                            {/* Investment Summary Tile */}
-                            <Card className="border border-gray-200 shadow-sm bg-white">
-                              <CardHeader className="pb-3">
-                                <CardTitle className="text-sm font-semibold text-gray-900">Investment Summary</CardTitle>
-                              </CardHeader>
-                              <CardContent className="pt-0 pb-1 space-y-1">
-                                <div className="flex items-center justify-between">
-                                  <span className="text-[9px] text-gray-600">Gross Invested</span>
-                                  <span className="flex-1 border-b border-dotted border-gray-300 mx-2"></span>
-                                  <span className="text-[10px] font-semibold text-gray-900">$425,000</span>
-                                </div>
-                                <div className="flex items-center justify-between">
-                                  <span className="text-[9px] text-gray-600">Net Invested</span>
-                                  <span className="flex-1 border-b border-dotted border-gray-300 mx-2"></span>
-                                  <span className="text-[10px] font-semibold text-gray-900">$410,000</span>
-                                </div>
-                                <div className="flex items-center justify-between">
-                                  <span className="text-[9px] text-gray-600">Net Gain</span>
-                                  <span className="flex-1 border-b border-dotted border-gray-300 mx-2"></span>
-                                  <span className="text-[10px] font-semibold text-green-600">+$38,500</span>
-                                </div>
-                                <div className="flex items-center justify-between">
-                                  <span className="text-[9px] text-gray-600">Rate of Return</span>
-                                  <span className="flex-1 border-b border-dotted border-gray-300 mx-2"></span>
-                                  <span className="text-[10px] font-semibold text-green-600">+7.4%</span>
-                                </div>
-                              </CardContent>
-                            </Card>
+                          {/* Investment Summary Tile */}
+                          <Card className="border border-gray-200 shadow-sm bg-white">
+                            <CardHeader className="pb-3">
+                              <CardTitle className="text-sm font-semibold text-gray-900">Investment Summary</CardTitle>
+                            </CardHeader>
+                            <CardContent className="pt-0 pb-1 space-y-1">
+                              <div className="flex items-center justify-between">
+                                <span className="text-[9px] text-gray-600">Gross Invested</span>
+                                <span className="flex-1 border-b border-dotted border-gray-300 mx-2"></span>
+                                <span className="text-[10px] font-semibold text-gray-900">$425,000</span>
+                              </div>
+                              <div className="flex items-center justify-between">
+                                <span className="text-[9px] text-gray-600">Net Invested</span>
+                                <span className="flex-1 border-b border-dotted border-gray-300 mx-2"></span>
+                                <span className="text-[10px] font-semibold text-gray-900">$410,000</span>
+                              </div>
+                              <div className="flex items-center justify-between">
+                                <span className="text-[9px] text-gray-600">Net Gain</span>
+                                <span className="flex-1 border-b border-dotted border-gray-300 mx-2"></span>
+                                <span className="text-[10px] font-semibold text-green-600">+$38,500</span>
+                              </div>
+                              <div className="flex items-center justify-between">
+                                <span className="text-[9px] text-gray-600">Rate of Return</span>
+                                <span className="flex-1 border-b border-dotted border-gray-300 mx-2"></span>
+                                <span className="text-[10px] font-semibold text-green-600">+7.4%</span>
+                              </div>
+                            </CardContent>
+                          </Card>
 
                             {/* Trading Actions Tile */}
                             <Card className="border border-gray-200 shadow-sm bg-white flex flex-col">

@@ -7465,6 +7465,85 @@ const ClientDetails = () => {
                             </CardContent>
                           </Card>
                         </div>
+
+                        {/* Third Row - Additional Empty Tiles */}
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 items-stretch mt-4">
+                          {/* Empty Tile */}
+                          <Card className="border border-gray-200 shadow-sm bg-white flex flex-col">
+                            <CardHeader className="pb-3">
+                              <CardTitle className="text-sm font-semibold text-gray-900">Empty Tile</CardTitle>
+                            </CardHeader>
+                            <CardContent className="pt-0 pb-3 flex-1">
+                            </CardContent>
+                          </Card>
+
+                          {/* Empty Tile */}
+                          <Card className="border border-gray-200 shadow-sm bg-white flex flex-col">
+                            <CardHeader className="pb-3">
+                              <CardTitle className="text-sm font-semibold text-gray-900">Empty Tile</CardTitle>
+                            </CardHeader>
+                            <CardContent className="pt-0 pb-3 flex-1">
+                            </CardContent>
+                          </Card>
+
+                          {/* Empty Tile */}
+                          <Card className="border border-gray-200 shadow-sm bg-white flex flex-col">
+                            <CardHeader className="pb-3">
+                              <CardTitle className="text-sm font-semibold text-gray-900">Empty Tile</CardTitle>
+                            </CardHeader>
+                            <CardContent className="pt-0 pb-3 flex-1">
+                            </CardContent>
+                          </Card>
+
+                          {/* Notices Tile */}
+                          <Card className="border border-gray-200 shadow-sm bg-white flex flex-col">
+                            <CardHeader className="pb-3">
+                              <CardTitle className="text-sm font-semibold text-gray-900">Notices</CardTitle>
+                            </CardHeader>
+                            <CardContent className="pt-0 pb-3 flex-1 flex items-center justify-center">
+                              <p className="text-xs text-gray-400">No notices</p>
+                            </CardContent>
+                          </Card>
+                        </div>
+
+                        {/* Fourth Row - Additional Empty Tiles */}
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 items-stretch mt-4">
+                          {/* Empty Tile */}
+                          <Card className="border border-gray-200 shadow-sm bg-white flex flex-col">
+                            <CardHeader className="pb-3">
+                              <CardTitle className="text-sm font-semibold text-gray-900">Empty Tile</CardTitle>
+                            </CardHeader>
+                            <CardContent className="pt-0 pb-3 flex-1">
+                            </CardContent>
+                          </Card>
+
+                          {/* Empty Tile */}
+                          <Card className="border border-gray-200 shadow-sm bg-white flex flex-col">
+                            <CardHeader className="pb-3">
+                              <CardTitle className="text-sm font-semibold text-gray-900">Empty Tile</CardTitle>
+                            </CardHeader>
+                            <CardContent className="pt-0 pb-3 flex-1">
+                            </CardContent>
+                          </Card>
+
+                          {/* Empty Tile */}
+                          <Card className="border border-gray-200 shadow-sm bg-white flex flex-col">
+                            <CardHeader className="pb-3">
+                              <CardTitle className="text-sm font-semibold text-gray-900">Empty Tile</CardTitle>
+                            </CardHeader>
+                            <CardContent className="pt-0 pb-3 flex-1">
+                            </CardContent>
+                          </Card>
+
+                          {/* Empty Tile */}
+                          <Card className="border border-gray-200 shadow-sm bg-white flex flex-col">
+                            <CardHeader className="pb-3">
+                              <CardTitle className="text-sm font-semibold text-gray-900">Empty Tile</CardTitle>
+                            </CardHeader>
+                            <CardContent className="pt-0 pb-3 flex-1">
+                            </CardContent>
+                          </Card>
+                        </div>
                       </TabsContent>
                       
                       <TabsContent value="details" className="mt-4">
