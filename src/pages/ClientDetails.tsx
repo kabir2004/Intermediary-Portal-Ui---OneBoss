@@ -69,6 +69,7 @@ import {
   Info,
   Building2,
   Eye,
+  EyeOff,
   Mic,
   Package,
   ArrowRight,
@@ -209,6 +210,7 @@ const ClientDetails = () => {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("investments");
   const [clientViewTab, setClientViewTab] = useState("summary");
+  const [showHiddenTabs, setShowHiddenTabs] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [activeFilter, setActiveFilter] = useState("Active");
   const [viewMode, setViewMode] = useState<"list" | "grid">("list");
@@ -3404,8 +3406,27 @@ const ClientDetails = () => {
               </Button>
             </div>
           </div>
-          <div>
+          <div className="flex items-center gap-2">
             <p className="text-sm text-gray-600">Account {client.id}</p>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="h-6 w-6 p-0"
+              onClick={() => {
+                const hiddenTabValues = ["questionnaires", "client-reports", "charts", "approvals", "attachments"];
+                if (showHiddenTabs && hiddenTabValues.includes(clientViewTab)) {
+                  setClientViewTab("summary");
+                }
+                setShowHiddenTabs(!showHiddenTabs);
+              }}
+              title={showHiddenTabs ? "Hide tabs" : "Show tabs"}
+            >
+              {showHiddenTabs ? (
+                <Eye className="h-4 w-4 text-gray-600" />
+              ) : (
+                <EyeOff className="h-4 w-4 text-gray-600" />
+              )}
+            </Button>
           </div>
         </div>
 
@@ -3447,44 +3468,48 @@ const ClientDetails = () => {
             Trading
             <HelpCircle className="h-3 w-3 ml-1" />
           </Button>
-          <Button
-            variant={clientViewTab === "questionnaires" ? "default" : "ghost"}
-            className={clientViewTab === "questionnaires" ? "bg-blue-600 text-white hover:bg-blue-700" : "text-gray-700 hover:bg-gray-100"}
-            onClick={() => setClientViewTab("questionnaires")}
-          >
-            Questionnaires
-            <HelpCircle className="h-3 w-3 ml-1" />
-          </Button>
-          <Button
-            variant={clientViewTab === "client-reports" ? "default" : "ghost"}
-            className={clientViewTab === "client-reports" ? "bg-blue-600 text-white hover:bg-blue-700" : "text-gray-700 hover:bg-gray-100"}
-            onClick={() => setClientViewTab("client-reports")}
-          >
-            Client Reports
-            <HelpCircle className="h-3 w-3 ml-1" />
-          </Button>
-          <Button
-            variant={clientViewTab === "charts" ? "default" : "ghost"}
-            className={clientViewTab === "charts" ? "bg-blue-600 text-white hover:bg-blue-700" : "text-gray-700 hover:bg-gray-100"}
-            onClick={() => setClientViewTab("charts")}
-          >
-            Charts
-            <HelpCircle className="h-3 w-3 ml-1" />
-          </Button>
-          <Button
-            variant={clientViewTab === "approvals" ? "default" : "ghost"}
-            className={clientViewTab === "approvals" ? "bg-blue-600 text-white hover:bg-blue-700" : "text-gray-700 hover:bg-gray-100"}
-            onClick={() => setClientViewTab("approvals")}
-          >
-            Approvals
-          </Button>
-          <Button
-            variant={clientViewTab === "attachments" ? "default" : "ghost"}
-            className={clientViewTab === "attachments" ? "bg-blue-600 text-white hover:bg-blue-700" : "text-gray-700 hover:bg-gray-100"}
-            onClick={() => setClientViewTab("attachments")}
-          >
-            Attachments
-          </Button>
+          {showHiddenTabs && (
+            <>
+              <Button
+                variant={clientViewTab === "questionnaires" ? "default" : "ghost"}
+                className={clientViewTab === "questionnaires" ? "bg-blue-600 text-white hover:bg-blue-700" : "text-gray-700 hover:bg-gray-100"}
+                onClick={() => setClientViewTab("questionnaires")}
+              >
+                Questionnaires
+                <HelpCircle className="h-3 w-3 ml-1" />
+              </Button>
+              <Button
+                variant={clientViewTab === "client-reports" ? "default" : "ghost"}
+                className={clientViewTab === "client-reports" ? "bg-blue-600 text-white hover:bg-blue-700" : "text-gray-700 hover:bg-gray-100"}
+                onClick={() => setClientViewTab("client-reports")}
+              >
+                Client Reports
+                <HelpCircle className="h-3 w-3 ml-1" />
+              </Button>
+              <Button
+                variant={clientViewTab === "charts" ? "default" : "ghost"}
+                className={clientViewTab === "charts" ? "bg-blue-600 text-white hover:bg-blue-700" : "text-gray-700 hover:bg-gray-100"}
+                onClick={() => setClientViewTab("charts")}
+              >
+                Charts
+                <HelpCircle className="h-3 w-3 ml-1" />
+              </Button>
+              <Button
+                variant={clientViewTab === "approvals" ? "default" : "ghost"}
+                className={clientViewTab === "approvals" ? "bg-blue-600 text-white hover:bg-blue-700" : "text-gray-700 hover:bg-gray-100"}
+                onClick={() => setClientViewTab("approvals")}
+              >
+                Approvals
+              </Button>
+              <Button
+                variant={clientViewTab === "attachments" ? "default" : "ghost"}
+                className={clientViewTab === "attachments" ? "bg-blue-600 text-white hover:bg-blue-700" : "text-gray-700 hover:bg-gray-100"}
+                onClick={() => setClientViewTab("attachments")}
+              >
+                Attachments
+              </Button>
+            </>
+          )}
         </div>
 
 
