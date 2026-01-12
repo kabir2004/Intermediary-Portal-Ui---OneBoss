@@ -73,6 +73,7 @@ import {
   Mic,
   Package,
   ArrowRight,
+  ArrowLeft,
 } from "lucide-react";
 import { CLIENTS } from "./Clients";
 
@@ -2343,6 +2344,14 @@ const ClientDetails = () => {
       if (selectedPlanForDetails !== firstPlanId) {
         setSelectedPlanForDetails(firstPlanId);
       }
+    }
+  }, [id]);
+
+  // Set owner name to client's name when client changes
+  useEffect(() => {
+    const client = CLIENTS.find((c) => c.id === id);
+    if (client) {
+      setOwnerName(client.name);
     }
   }, [id]);
 
@@ -6455,7 +6464,25 @@ const ClientDetails = () => {
                       <Checkbox id="include-inactive-plans" checked={includeInactivePlans} onCheckedChange={(checked) => setIncludeInactivePlans(checked as boolean)} />
                       <Label htmlFor="include-inactive-plans" className="text-xs text-gray-700 cursor-pointer">Include Inactive Plans</Label>
                     </div>
-                    <Button size="sm" className="bg-blue-600 hover:bg-blue-700 text-white text-xs h-7">
+                    <Button 
+                      size="sm" 
+                      className="bg-blue-600 hover:bg-blue-700 text-white text-xs h-7"
+                      onClick={() => {
+                        setIsSelectPlanTypeOpen(true);
+                        setSelectedPlanType("");
+                        setPlanSetupStep(0);
+                        const currentClient = CLIENTS.find((c) => c.id === id);
+                        setOwnerName(currentClient?.name || "John Smith");
+                        setBeneficiaryName("");
+                        setIntermediaryCode("");
+                        setIntermediaryAccountCode("");
+                        setPlanNotes("");
+                        setPlanObjectives("");
+                        setRiskTolerance("");
+                        setTimeHorizon("");
+                        setCreatedPlanDetails(null);
+                      }}
+                    >
                       Add New Plan
                     </Button>
                   </div>
@@ -13967,17 +13994,17 @@ const ClientDetails = () => {
       </Dialog>
 
       {/* Select Plan Type Dialog */}
-      <Dialog open={isSelectPlanTypeOpen} onOpenChange={setIsSelectPlanTypeOpen}>
-        <DialogContent className="sm:max-w-[400px]">
-          <DialogHeader>
-            <DialogTitle>Select Plan Type</DialogTitle>
+      <Dialog open={isSelectPlanTypeOpen && planSetupStep === 0} onOpenChange={setIsSelectPlanTypeOpen}>
+        <DialogContent className="sm:max-w-[350px]">
+          <DialogHeader className="pb-3">
+            <DialogTitle className="text-base">Select Plan Type</DialogTitle>
           </DialogHeader>
-          <div className="py-4">
-            <Label className="text-sm font-semibold text-gray-700 mb-2 block">
+          <div className="py-2">
+            <Label className="text-xs font-semibold text-gray-700 mb-1.5 block">
               Plan Type
             </Label>
             <Select value={selectedPlanType} onValueChange={setSelectedPlanType}>
-              <SelectTrigger>
+              <SelectTrigger className="h-9">
                 <SelectValue placeholder="Select a plan type..." />
               </SelectTrigger>
               <SelectContent>
@@ -13986,6 +14013,7 @@ const ClientDetails = () => {
                 <SelectItem value="RESP">RESP</SelectItem>
                 <SelectItem value="TFSA">TFSA</SelectItem>
                 <SelectItem value="RRIF">RRIF</SelectItem>
+                <SelectItem value="LRIF">LRIF</SelectItem>
                 <SelectItem value="Non-Registered">Non-Registered</SelectItem>
                 <SelectItem value="LIRA">LIRA</SelectItem>
                 <SelectItem value="LIF">LIF</SelectItem>
@@ -13993,11 +14021,15 @@ const ClientDetails = () => {
               </SelectContent>
             </Select>
           </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setIsSelectPlanTypeOpen(false)}>
+          <DialogFooter className="pt-3">
+            <Button variant="outline" size="sm" onClick={() => {
+              setIsSelectPlanTypeOpen(false);
+              setSelectedPlanType("");
+            }}>
               Cancel
             </Button>
             <Button
+              size="sm"
               className="bg-blue-600 hover:bg-blue-700 text-white"
               onClick={() => {
                 if (selectedPlanType) {
@@ -14014,242 +14046,259 @@ const ClientDetails = () => {
       </Dialog>
 
       {/* Plan Setup Step 1 Dialog */}
-      <Dialog open={planSetupStep === 1 && !isSelectPlanTypeOpen && !!selectedPlanType} onOpenChange={(open) => {
-        if (!open) {
-          setPlanSetupStep(0);
-          setIsSelectPlanTypeOpen(false);
-          setSelectedPlanType("");
-        }
-      }}>
-        <DialogContent className="sm:max-w-[500px]">
-          <DialogHeader>
-            <DialogTitle>Plan Setup - {selectedPlanType} (Step 1 of 3)</DialogTitle>
-          </DialogHeader>
-          <div className="space-y-4 py-4">
-            <div>
-              <Label className="text-sm font-semibold text-gray-700 mb-2 block">
-                Owner/Annuitant Name <span className="text-red-500">*</span>
-              </Label>
-              <Input
-                value={ownerName}
-                onChange={(e) => setOwnerName(e.target.value)}
-                placeholder="Enter owner/annuitant name"
-              />
+      {planSetupStep === 1 && (
+        <Dialog open={true} onOpenChange={(open) => {
+          if (!open) {
+            setPlanSetupStep(0);
+            setIsSelectPlanTypeOpen(false);
+            setSelectedPlanType("");
+          }
+        }}>
+          <DialogContent className="sm:max-w-[350px]">
+            <DialogHeader className="pb-3">
+              <DialogTitle className="text-base">Plan Setup - {selectedPlanType}</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-3 py-2">
+              <div>
+                <Label className="text-xs font-semibold text-gray-700 mb-1.5 block">
+                  Owner/Annuitant Name <span className="text-red-500">*</span>
+                </Label>
+                <Input
+                  value={ownerName}
+                  onChange={(e) => setOwnerName(e.target.value)}
+                  placeholder="Enter owner/annuitant name"
+                  className="h-9 text-sm"
+                />
+              </div>
+              <div>
+                <Label className="text-xs font-semibold text-gray-700 mb-1.5 block">
+                  Beneficiary Name <span className="text-red-500">*</span>
+                </Label>
+                <Input
+                  value={beneficiaryName}
+                  onChange={(e) => setBeneficiaryName(e.target.value)}
+                  placeholder="Enter beneficiary name"
+                  className="h-9 text-sm"
+                />
+              </div>
             </div>
-            <div>
-              <Label className="text-sm font-semibold text-gray-700 mb-2 block">
-                Beneficiary Name <span className="text-red-500">*</span>
-              </Label>
-              <Input
-                value={beneficiaryName}
-                onChange={(e) => setBeneficiaryName(e.target.value)}
-                placeholder="Enter beneficiary name"
-              />
-            </div>
-          </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => {
-              setPlanSetupStep(0);
-              setIsSelectPlanTypeOpen(false);
-            }}>
-              Cancel
-            </Button>
-            <Button
-              className="bg-blue-600 hover:bg-blue-700 text-white"
-              onClick={() => {
-                if (ownerName && beneficiaryName) {
-                  setPlanSetupStep(2);
-                }
-              }}
-              disabled={!ownerName || !beneficiaryName}
-            >
-              Next &gt;
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-
-      {/* Plan Setup Step 2 Dialog */}
-      <Dialog open={planSetupStep === 2 && !!selectedPlanType} onOpenChange={(open) => {
-        if (!open) {
-          setPlanSetupStep(0);
-          setIsSelectPlanTypeOpen(false);
-          setSelectedPlanType("");
-        }
-      }}>
-        <DialogContent className="sm:max-w-[500px]">
-          <DialogHeader>
-            <DialogTitle>Plan Setup - {selectedPlanType} (Step 2 of 3)</DialogTitle>
-          </DialogHeader>
-          <div className="space-y-4 py-4">
-            <div>
-              <Label className="text-sm font-semibold text-gray-700 mb-2 block">
-                Intermediary Code <span className="text-red-500">*</span>
-              </Label>
-              <Input
-                value={intermediaryCode}
-                onChange={(e) => {
-                  const value = e.target.value.slice(0, 10);
-                  setIntermediaryCode(value);
-                }}
-                placeholder="Enter intermediary code (max 10 characters)"
-                maxLength={10}
-              />
-              <p className="text-xs text-gray-500 mt-1">{intermediaryCode.length}/10 characters</p>
-            </div>
-            <div>
-              <Label className="text-sm font-semibold text-gray-700 mb-2 block">
-                Intermediary Account Code <span className="text-red-500">*</span>
-              </Label>
-              <Input
-                value={intermediaryAccountCode}
-                onChange={(e) => {
-                  const value = e.target.value.slice(0, 10);
-                  setIntermediaryAccountCode(value);
-                }}
-                placeholder="Enter intermediary account code (max 10 characters)"
-                maxLength={10}
-              />
-              <p className="text-xs text-gray-500 mt-1">{intermediaryAccountCode.length}/10 characters</p>
-            </div>
-          </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setPlanSetupStep(1)}>
-              &lt; Previous
-            </Button>
-            <Button variant="outline" onClick={() => {
-              setPlanSetupStep(0);
-              setIsSelectPlanTypeOpen(false);
-            }}>
-              Cancel
-            </Button>
-            <Button
-              className="bg-blue-600 hover:bg-blue-700 text-white"
-              onClick={() => {
-                if (intermediaryCode && intermediaryAccountCode) {
-                  setPlanSetupStep(3);
-                }
-              }}
-              disabled={!intermediaryCode || !intermediaryAccountCode}
-            >
-              Next &gt;
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-
-      {/* Plan Setup Step 3 Dialog */}
-      <Dialog open={planSetupStep === 3 && !!selectedPlanType} onOpenChange={(open) => {
-        if (!open) {
-          setPlanSetupStep(0);
-          setIsSelectPlanTypeOpen(false);
-          setSelectedPlanType("");
-        }
-      }}>
-        <DialogContent className="sm:max-w-[500px]">
-          <DialogHeader>
-            <DialogTitle>Plan Setup - {selectedPlanType} (Step 3 of 3)</DialogTitle>
-          </DialogHeader>
-          <div className="space-y-4 py-4">
-            <div>
-              <Label className="text-sm font-semibold text-gray-700 mb-2 block">
-                Notes (Optional)
-              </Label>
-              <Textarea
-                value={planNotes}
-                onChange={(e) => setPlanNotes(e.target.value)}
-                placeholder="Enter any additional notes..."
-                className="min-h-[100px]"
-              />
-            </div>
-            <div>
-              <Label className="text-sm font-semibold text-gray-700 mb-2 block">
-                Objectives <span className="text-red-500">*</span>
-              </Label>
-              <Input
-                value={planObjectives}
-                onChange={(e) => setPlanObjectives(e.target.value)}
-                placeholder="Enter plan objectives"
-              />
-            </div>
-            <div>
-              <Label className="text-sm font-semibold text-gray-700 mb-2 block">
-                Risk Tolerance <span className="text-red-500">*</span>
-              </Label>
-              <Select value={riskTolerance} onValueChange={setRiskTolerance}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select risk tolerance..." />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="Conservative">Conservative</SelectItem>
-                  <SelectItem value="Moderate">Moderate</SelectItem>
-                  <SelectItem value="Aggressive">Aggressive</SelectItem>
-                  <SelectItem value="Speculation">Speculation</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            <div>
-              <Label className="text-sm font-semibold text-gray-700 mb-2 block">
-                Time Horizon (Years) <span className="text-red-500">*</span>
-              </Label>
-              <Input
-                type="number"
-                value={timeHorizon}
-                onChange={(e) => {
-                  const value = e.target.value;
-                  if (value === "" || (parseInt(value) >= 1 && parseInt(value) <= 50)) {
-                    setTimeHorizon(value);
+            <DialogFooter className="pt-3">
+              <Button variant="outline" size="sm" onClick={() => {
+                setPlanSetupStep(0);
+                setIsSelectPlanTypeOpen(false);
+              }}>
+                Cancel
+              </Button>
+              <Button
+                size="sm"
+                className="bg-blue-600 hover:bg-blue-700 text-white"
+                onClick={() => {
+                  if (ownerName && beneficiaryName) {
+                    setPlanSetupStep(2);
                   }
                 }}
-                placeholder="Enter time horizon (1-50 years)"
-                min={1}
-                max={50}
-              />
+                disabled={!ownerName || !beneficiaryName}
+              >
+                Next
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+      )}
+
+      {/* Plan Setup Step 2 Dialog */}
+      {planSetupStep === 2 && (
+        <Dialog open={true} onOpenChange={(open) => {
+          if (!open) {
+            setPlanSetupStep(0);
+            setIsSelectPlanTypeOpen(false);
+            setSelectedPlanType("");
+          }
+        }}>
+          <DialogContent className="sm:max-w-[350px]">
+            <DialogHeader className="pb-3">
+              <DialogTitle className="text-base">Plan Setup - {selectedPlanType}</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-3 py-2">
+              <div>
+                <Label className="text-xs font-semibold text-gray-700 mb-1.5 block">
+                  Intermediary Code <span className="text-red-500">*</span>
+                </Label>
+                <Input
+                  value={intermediaryCode}
+                  onChange={(e) => {
+                    const value = e.target.value.slice(0, 10);
+                    setIntermediaryCode(value);
+                  }}
+                  placeholder="Enter intermediary code (max 10 characters)"
+                  maxLength={10}
+                  className="h-9 text-sm"
+                />
+                <p className="text-[10px] text-gray-500 mt-0.5">{intermediaryCode.length}/10 characters</p>
+              </div>
+              <div>
+                <Label className="text-xs font-semibold text-gray-700 mb-1.5 block">
+                  Intermediary Account Code <span className="text-red-500">*</span>
+                </Label>
+                <Input
+                  value={intermediaryAccountCode}
+                  onChange={(e) => {
+                    const value = e.target.value.slice(0, 10);
+                    setIntermediaryAccountCode(value);
+                  }}
+                  placeholder="Enter intermediary account code (max 10 characters)"
+                  maxLength={10}
+                  className="h-9 text-sm"
+                />
+                <p className="text-[10px] text-gray-500 mt-0.5">{intermediaryAccountCode.length}/10 characters</p>
+              </div>
             </div>
-          </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setPlanSetupStep(2)}>
-              &lt; Previous
-            </Button>
-            <Button variant="outline" onClick={() => {
-              setPlanSetupStep(0);
-              setIsSelectPlanTypeOpen(false);
-            }}>
-              Cancel
-            </Button>
-            <Button
-              className="bg-green-600 hover:bg-green-700 text-white"
-              onClick={() => {
-                if (planObjectives && riskTolerance && timeHorizon) {
-                  // Generate plan details
-                  const planId = `PLN-${Date.now()}-${Math.random().toString(36).substring(2, 10).toUpperCase()}`;
-                  const accountNumber = Math.floor(1000000000 + Math.random() * 9000000000).toString();
-                  
-                  setCreatedPlanDetails({
-                    planType: selectedPlanType,
-                    planId,
-                    accountNumber,
-                    owner: ownerName,
-                    beneficiary: beneficiaryName,
-                    intermediaryCode,
-                    intermediaryAccountCode,
-                    notes: planNotes,
-                    objectives: planObjectives,
-                    riskTolerance,
-                    timeHorizon,
-                  });
-                  
-                  setPlanSetupStep(0);
-                  setIsAddProductOpen(true);
-                }
-              }}
-              disabled={!planObjectives || !riskTolerance || !timeHorizon}
-            >
-              Submit
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+            <DialogFooter className="pt-3">
+              <Button variant="outline" size="sm" onClick={() => setPlanSetupStep(1)}>
+                <ArrowLeft className="h-3.5 w-3.5 mr-1" />
+                Previous
+              </Button>
+              <Button variant="outline" size="sm" onClick={() => {
+                setPlanSetupStep(0);
+                setIsSelectPlanTypeOpen(false);
+              }}>
+                Cancel
+              </Button>
+              <Button
+                size="sm"
+                className="bg-blue-600 hover:bg-blue-700 text-white"
+                onClick={() => {
+                  if (intermediaryCode && intermediaryAccountCode) {
+                    setPlanSetupStep(3);
+                  }
+                }}
+                disabled={!intermediaryCode || !intermediaryAccountCode}
+              >
+                Next
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+      )}
+
+      {/* Plan Setup Step 3 Dialog */}
+      {planSetupStep === 3 && (
+        <Dialog open={true} onOpenChange={(open) => {
+          if (!open) {
+            setPlanSetupStep(0);
+            setIsSelectPlanTypeOpen(false);
+            setSelectedPlanType("");
+          }
+        }}>
+          <DialogContent className="sm:max-w-[350px]">
+            <DialogHeader className="pb-3">
+              <DialogTitle className="text-base">Plan Setup - {selectedPlanType}</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-3 py-2">
+              <div>
+                <Label className="text-xs font-semibold text-gray-700 mb-1.5 block">
+                  Notes (Optional)
+                </Label>
+                <Textarea
+                  value={planNotes}
+                  onChange={(e) => setPlanNotes(e.target.value)}
+                  placeholder="Enter any additional notes..."
+                  className="min-h-[80px] text-sm"
+                />
+              </div>
+              <div>
+                <Label className="text-xs font-semibold text-gray-700 mb-1.5 block">
+                  Objectives <span className="text-red-500">*</span>
+                </Label>
+                <Input
+                  value={planObjectives}
+                  onChange={(e) => setPlanObjectives(e.target.value)}
+                  placeholder="Enter plan objectives"
+                  className="h-9 text-sm"
+                />
+              </div>
+              <div>
+                <Label className="text-xs font-semibold text-gray-700 mb-1.5 block">
+                  Risk Tolerance <span className="text-red-500">*</span>
+                </Label>
+                <Select value={riskTolerance} onValueChange={setRiskTolerance}>
+                  <SelectTrigger className="h-9 text-sm">
+                    <SelectValue placeholder="Select risk tolerance..." />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Conservative">Conservative</SelectItem>
+                    <SelectItem value="Moderate">Moderate</SelectItem>
+                    <SelectItem value="Aggressive">Aggressive</SelectItem>
+                    <SelectItem value="Speculation">Speculation</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <Label className="text-xs font-semibold text-gray-700 mb-1.5 block">
+                  Time Horizon (Years) <span className="text-red-500">*</span>
+                </Label>
+                <Input
+                  type="number"
+                  value={timeHorizon}
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    if (value === "" || (parseInt(value) >= 1 && parseInt(value) <= 50)) {
+                      setTimeHorizon(value);
+                    }
+                  }}
+                  placeholder="Enter time horizon (1-50 years)"
+                  min={1}
+                  max={50}
+                  className="h-9 text-sm"
+                />
+              </div>
+            </div>
+            <DialogFooter className="pt-3">
+              <Button variant="outline" size="sm" onClick={() => setPlanSetupStep(2)}>
+                <ArrowLeft className="h-3.5 w-3.5 mr-1" />
+                Previous
+              </Button>
+              <Button variant="outline" size="sm" onClick={() => {
+                setPlanSetupStep(0);
+                setIsSelectPlanTypeOpen(false);
+              }}>
+                Cancel
+              </Button>
+              <Button
+                size="sm"
+                className="bg-green-600 hover:bg-green-700 text-white"
+                onClick={() => {
+                  if (planObjectives && riskTolerance && timeHorizon) {
+                    // Generate plan details
+                    const planId = `PLN-${Date.now()}-${Math.random().toString(36).substring(2, 10).toUpperCase()}`;
+                    const accountNumber = Math.floor(1000000000 + Math.random() * 9000000000).toString();
+                    
+                    setCreatedPlanDetails({
+                      planType: selectedPlanType,
+                      planId,
+                      accountNumber,
+                      owner: ownerName,
+                      beneficiary: beneficiaryName,
+                      intermediaryCode,
+                      intermediaryAccountCode,
+                      notes: planNotes,
+                      objectives: planObjectives,
+                      riskTolerance,
+                      timeHorizon,
+                    });
+                    
+                    setPlanSetupStep(0);
+                    setIsAddProductOpen(true);
+                  }
+                }}
+                disabled={!planObjectives || !riskTolerance || !timeHorizon}
+              >
+                Submit
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+      )}
 
       {/* Add Product Dialog */}
       <Dialog open={isAddProductOpen} onOpenChange={setIsAddProductOpen}>
