@@ -3438,34 +3438,6 @@ const ClientDetails = () => {
           </div>
           <div className="flex items-center gap-2">
             <p className="text-sm text-gray-600">Account {client.id}</p>
-            <Button
-              variant="ghost"
-              size="sm"
-              className="h-6 w-6 p-0 ml-32"
-              onClick={() => {
-                const hiddenTabValues = ["questionnaires", "client-reports", "charts", "approvals", "attachments"];
-                const isCurrentlyVisible = showHiddenTabs.has(client.id);
-                if (isCurrentlyVisible && hiddenTabValues.includes(clientViewTab)) {
-                  setClientViewTab("summary");
-                }
-                setShowHiddenTabs(prev => {
-                  const newSet = new Set(prev);
-                  if (newSet.has(client.id)) {
-                    newSet.delete(client.id);
-                  } else {
-                    newSet.add(client.id);
-                  }
-                  return newSet;
-                });
-              }}
-              title={showHiddenTabs.has(client.id) ? "Hide tabs" : "Show tabs"}
-            >
-              {showHiddenTabs.has(client.id) ? (
-                <Eye className="h-4 w-4 text-gray-600" />
-              ) : (
-                <EyeOff className="h-4 w-4 text-gray-600" />
-              )}
-            </Button>
           </div>
         </div>
 
@@ -3505,7 +3477,34 @@ const ClientDetails = () => {
             onClick={() => setClientViewTab("trading")}
           >
             Trading
-            <HelpCircle className="h-3 w-3 ml-1" />
+          </Button>
+          <Button
+            variant="ghost"
+            size="sm"
+            className="h-8 w-8 p-0"
+            onClick={() => {
+              const hiddenTabValues = ["questionnaires", "client-reports", "charts", "approvals", "attachments"];
+              const isCurrentlyVisible = showHiddenTabs.has(client.id);
+              if (isCurrentlyVisible && hiddenTabValues.includes(clientViewTab)) {
+                setClientViewTab("summary");
+              }
+              setShowHiddenTabs(prev => {
+                const newSet = new Set(prev);
+                if (newSet.has(client.id)) {
+                  newSet.delete(client.id);
+                } else {
+                  newSet.add(client.id);
+                }
+                return newSet;
+              });
+            }}
+            title={showHiddenTabs.has(client.id) ? "Hide tabs" : "Show tabs"}
+          >
+            {showHiddenTabs.has(client.id) ? (
+              <Eye className="h-4 w-4 text-gray-600" />
+            ) : (
+              <EyeOff className="h-4 w-4 text-gray-600" />
+            )}
           </Button>
           {showHiddenTabs.has(client.id) && (
             <>
@@ -3515,7 +3514,6 @@ const ClientDetails = () => {
                 onClick={() => setClientViewTab("questionnaires")}
               >
                 Questionnaires
-                <HelpCircle className="h-3 w-3 ml-1" />
               </Button>
               <Button
                 variant={clientViewTab === "client-reports" ? "default" : "ghost"}
@@ -3523,7 +3521,6 @@ const ClientDetails = () => {
                 onClick={() => setClientViewTab("client-reports")}
               >
                 Client Reports
-                <HelpCircle className="h-3 w-3 ml-1" />
               </Button>
               <Button
                 variant={clientViewTab === "charts" ? "default" : "ghost"}
@@ -3531,7 +3528,6 @@ const ClientDetails = () => {
                 onClick={() => setClientViewTab("charts")}
               >
                 Charts
-                <HelpCircle className="h-3 w-3 ml-1" />
               </Button>
               <Button
                 variant={clientViewTab === "approvals" ? "default" : "ghost"}
@@ -3708,253 +3704,205 @@ const ClientDetails = () => {
             </CardContent>
           </Card>
 
-          {/* Asset Allocation Tile */}
+          {/* Allocations Tile - Combined Asset, Geographic, and Sector */}
           <Card 
-            className="border border-gray-200 shadow-sm bg-white col-span-1 cursor-pointer hover:shadow-md hover:border-blue-300 transition-all duration-200 flex flex-col"
+            className="border border-gray-200 shadow-sm bg-white col-span-1 cursor-pointer hover:shadow-md hover:border-blue-300 transition-all duration-200"
             onClick={() => {
               setChartsSubTab("allocations");
               setClientViewTab("charts");
             }}
           >
             <CardHeader className="pb-2 px-3 pt-3">
-              <CardTitle className="text-xs font-semibold text-gray-900">Asset Allocation</CardTitle>
+              <CardTitle className="text-xs font-semibold text-gray-900">Allocations</CardTitle>
             </CardHeader>
-            <CardContent className="pt-0 pb-3 px-3 flex-1 flex items-center justify-center">
-              <ResponsiveContainer width="100%" height={120}>
-                <PieChart>
-                  <Pie
-                    data={[
-                      { name: "Equity", value: 45 },
-                      { name: "Bonds", value: 30 },
-                      { name: "Cash", value: 15 },
-                      { name: "Other", value: 10 },
-                    ]}
-                    cx="50%"
-                    cy="50%"
-                    innerRadius={28}
-                    outerRadius={48}
-                    paddingAngle={2}
-                    fill="#8884d8"
-                    dataKey="value"
-                  >
-                    <Cell fill="#2563eb" />
-                    <Cell fill="#16a34a" />
-                    <Cell fill="#ca8a04" />
-                    <Cell fill="#64748b" />
-                  </Pie>
-                  <RechartsTooltip 
-                    formatter={(value: number) => `${value}%`}
-                    contentStyle={{
-                      backgroundColor: 'white',
-                      border: '1px solid #e5e7eb',
-                      borderRadius: '6px',
-                      padding: '6px 10px',
-                      fontSize: '11px',
-                      boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
-                    }}
-                  />
-                </PieChart>
-              </ResponsiveContainer>
-            </CardContent>
-          </Card>
+            <CardContent className="pt-0 pb-2 space-y-1.5">
+              <div className="grid grid-cols-3 gap-1 w-full">
+                {/* Asset Allocation */}
+                <div className="flex flex-col items-center">
+                  <p className="text-[8px] font-semibold text-gray-700 mb-0.5">Asset</p>
+                  <ResponsiveContainer width="100%" height={35}>
+                    <PieChart>
+                      <Pie
+                        data={[
+                          { name: "Equity", value: 45 },
+                          { name: "Bonds", value: 30 },
+                          { name: "Cash", value: 15 },
+                          { name: "Other", value: 10 },
+                        ]}
+                        cx="50%"
+                        cy="50%"
+                        outerRadius={14}
+                        paddingAngle={1}
+                        fill="#8884d8"
+                        dataKey="value"
+                      >
+                        <Cell fill="#2563eb" />
+                        <Cell fill="#16a34a" />
+                        <Cell fill="#ca8a04" />
+                        <Cell fill="#64748b" />
+                      </Pie>
+                    </PieChart>
+                  </ResponsiveContainer>
+                </div>
 
-          {/* Geographic Allocation Tile */}
-          <Card 
-            className="border border-gray-200 shadow-sm bg-white col-span-1 cursor-pointer hover:shadow-md hover:border-blue-300 transition-all duration-200 flex flex-col"
-            onClick={() => {
-              setChartsSubTab("allocations");
-              setClientViewTab("charts");
-            }}
-          >
-            <CardHeader className="pb-2 px-3 pt-3">
-              <CardTitle className="text-xs font-semibold text-gray-900">Geographic Allocation</CardTitle>
-            </CardHeader>
-            <CardContent className="pt-0 pb-3 px-3 flex-1 flex items-center justify-center">
-              <ResponsiveContainer width="100%" height={120}>
-                <PieChart>
-                  <Pie
-                    data={[
-                      { name: "North America", value: 50 },
-                      { name: "Europe", value: 25 },
-                      { name: "Asia", value: 15 },
-                      { name: "Other", value: 10 },
-                    ]}
-                    cx="50%"
-                    cy="50%"
-                    innerRadius={28}
-                    outerRadius={48}
-                    paddingAngle={2}
-                    fill="#8884d8"
-                    dataKey="value"
-                  >
-                    <Cell fill="#2563eb" />
-                    <Cell fill="#16a34a" />
-                    <Cell fill="#ca8a04" />
-                    <Cell fill="#64748b" />
-                  </Pie>
-                  <RechartsTooltip 
-                    formatter={(value: number) => `${value}%`}
-                    contentStyle={{
-                      backgroundColor: 'white',
-                      border: '1px solid #e5e7eb',
-                      borderRadius: '6px',
-                      padding: '6px 10px',
-                      fontSize: '11px',
-                      boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
-                    }}
-                  />
-                </PieChart>
-              </ResponsiveContainer>
-            </CardContent>
-          </Card>
+                {/* Geographic Allocation */}
+                <div className="flex flex-col items-center">
+                  <p className="text-[8px] font-semibold text-gray-700 mb-0.5">Geographic</p>
+                  <ResponsiveContainer width="100%" height={35}>
+                    <PieChart>
+                      <Pie
+                        data={[
+                          { name: "North America", value: 50 },
+                          { name: "Europe", value: 25 },
+                          { name: "Asia", value: 15 },
+                          { name: "Other", value: 10 },
+                        ]}
+                        cx="50%"
+                        cy="50%"
+                        outerRadius={14}
+                        paddingAngle={1}
+                        fill="#8884d8"
+                        dataKey="value"
+                      >
+                        <Cell fill="#2563eb" />
+                        <Cell fill="#16a34a" />
+                        <Cell fill="#ca8a04" />
+                        <Cell fill="#64748b" />
+                      </Pie>
+                    </PieChart>
+                  </ResponsiveContainer>
+                </div>
 
-          {/* Sector Allocation Tile */}
-          <Card 
-            className="border border-gray-200 shadow-sm bg-white col-span-1 cursor-pointer hover:shadow-md hover:border-blue-300 transition-all duration-200 flex flex-col"
-            onClick={() => {
-              setChartsSubTab("allocations");
-              setClientViewTab("charts");
-            }}
-          >
-            <CardHeader className="pb-2 px-3 pt-3">
-              <CardTitle className="text-xs font-semibold text-gray-900">Sector Allocation</CardTitle>
-            </CardHeader>
-            <CardContent className="pt-0 pb-3 px-3 flex-1 flex items-center justify-center">
-              <ResponsiveContainer width="100%" height={120}>
-                <PieChart>
-                  <Pie
-                    data={[
-                      { name: "Technology", value: 30 },
-                      { name: "Financial", value: 25 },
-                      { name: "Healthcare", value: 20 },
-                      { name: "Other", value: 25 },
-                    ]}
-                    cx="50%"
-                    cy="50%"
-                    innerRadius={28}
-                    outerRadius={48}
-                    paddingAngle={2}
-                    fill="#8884d8"
-                    dataKey="value"
-                  >
-                    <Cell fill="#2563eb" />
-                    <Cell fill="#16a34a" />
-                    <Cell fill="#ca8a04" />
-                    <Cell fill="#64748b" />
-                  </Pie>
-                  <RechartsTooltip 
-                    formatter={(value: number) => `${value}%`}
-                    contentStyle={{
-                      backgroundColor: 'white',
-                      border: '1px solid #e5e7eb',
-                      borderRadius: '6px',
-                      padding: '6px 10px',
-                      fontSize: '11px',
-                      boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
-                    }}
-                  />
-                </PieChart>
-              </ResponsiveContainer>
+                {/* Sector Allocation */}
+                <div className="flex flex-col items-center">
+                  <p className="text-[8px] font-semibold text-gray-700 mb-0.5">Sector</p>
+                  <ResponsiveContainer width="100%" height={35}>
+                    <PieChart>
+                      <Pie
+                        data={[
+                          { name: "Technology", value: 30 },
+                          { name: "Financial", value: 25 },
+                          { name: "Healthcare", value: 20 },
+                          { name: "Other", value: 25 },
+                        ]}
+                        cx="50%"
+                        cy="50%"
+                        outerRadius={14}
+                        paddingAngle={1}
+                        fill="#8884d8"
+                        dataKey="value"
+                      >
+                        <Cell fill="#2563eb" />
+                        <Cell fill="#16a34a" />
+                        <Cell fill="#ca8a04" />
+                        <Cell fill="#64748b" />
+                      </Pie>
+                    </PieChart>
+                  </ResponsiveContainer>
+                </div>
+              </div>
             </CardContent>
           </Card>
 
           {/* Notices Tile */}
-          <Card className="border border-gray-200 shadow-sm bg-white col-span-1 flex flex-col">
+          <Card className="border border-gray-200 shadow-sm bg-white col-span-1">
             <CardHeader className="pb-2 px-3 pt-3">
               <CardTitle className="text-xs font-semibold text-gray-900">Notices</CardTitle>
             </CardHeader>
-            <CardContent className="pt-0 pb-3 px-3 flex-1 flex items-center justify-center">
+            <CardContent className="pt-0 pb-2 space-y-1.5">
               <div className="text-center">
-                <p className="text-xs text-gray-400 italic">No notices</p>
+                <p className="text-sm text-gray-400 italic">No notices</p>
               </div>
             </CardContent>
           </Card>
 
           {/* 4 Empty Tiles under Client Profiler */}
-          <div className="col-span-1 flex flex-col gap-1">
+          <div className="col-span-1 flex flex-col gap-0.5">
             <Card className="border border-gray-200 shadow-sm bg-white">
-              <CardHeader className="pb-1 px-2 pt-2">
-                <CardTitle className="text-[10px] font-semibold text-gray-900">Empty Tile</CardTitle>
+              <CardHeader className="pb-0.5 px-1.5 pt-1.5">
+                <CardTitle className="text-[8px] font-semibold text-gray-900">Empty Tile</CardTitle>
               </CardHeader>
-              <CardContent className="pt-0 pb-1">
+              <CardContent className="pt-0 pb-0.5">
               </CardContent>
             </Card>
             <Card className="border border-gray-200 shadow-sm bg-white">
-              <CardHeader className="pb-1 px-2 pt-2">
-                <CardTitle className="text-[10px] font-semibold text-gray-900">Empty Tile</CardTitle>
+              <CardHeader className="pb-0.5 px-1.5 pt-1.5">
+                <CardTitle className="text-[8px] font-semibold text-gray-900">Empty Tile</CardTitle>
               </CardHeader>
-              <CardContent className="pt-0 pb-1">
+              <CardContent className="pt-0 pb-0.5">
               </CardContent>
             </Card>
             <Card className="border border-gray-200 shadow-sm bg-white">
-              <CardHeader className="pb-1 px-2 pt-2">
-                <CardTitle className="text-[10px] font-semibold text-gray-900">Empty Tile</CardTitle>
+              <CardHeader className="pb-0.5 px-1.5 pt-1.5">
+                <CardTitle className="text-[8px] font-semibold text-gray-900">Empty Tile</CardTitle>
               </CardHeader>
-              <CardContent className="pt-0 pb-1">
+              <CardContent className="pt-0 pb-0.5">
               </CardContent>
             </Card>
             <Card className="border border-gray-200 shadow-sm bg-white">
-              <CardHeader className="pb-1 px-2 pt-2">
-                <CardTitle className="text-[10px] font-semibold text-gray-900">Empty Tile</CardTitle>
+              <CardHeader className="pb-0.5 px-1.5 pt-1.5">
+                <CardTitle className="text-[8px] font-semibold text-gray-900">Empty Tile</CardTitle>
               </CardHeader>
-              <CardContent className="pt-0 pb-1">
+              <CardContent className="pt-0 pb-0.5">
               </CardContent>
             </Card>
           </div>
 
           {/* 3 Empty Tiles under Investment Summary */}
-          <div className="col-span-1 flex flex-col gap-1">
+          <div className="col-span-1 flex flex-col gap-0.5">
             <Card className="border border-gray-200 shadow-sm bg-white">
-              <CardHeader className="pb-1 px-2 pt-2">
-                <CardTitle className="text-[10px] font-semibold text-gray-900">Empty Tile</CardTitle>
+              <CardHeader className="pb-0.5 px-1.5 pt-1.5">
+                <CardTitle className="text-[8px] font-semibold text-gray-900">Empty Tile</CardTitle>
               </CardHeader>
-              <CardContent className="pt-0 pb-1">
+              <CardContent className="pt-0 pb-0.5">
               </CardContent>
             </Card>
             <Card className="border border-gray-200 shadow-sm bg-white">
-              <CardHeader className="pb-1 px-2 pt-2">
-                <CardTitle className="text-[10px] font-semibold text-gray-900">Empty Tile</CardTitle>
+              <CardHeader className="pb-0.5 px-1.5 pt-1.5">
+                <CardTitle className="text-[8px] font-semibold text-gray-900">Empty Tile</CardTitle>
               </CardHeader>
-              <CardContent className="pt-0 pb-1">
+              <CardContent className="pt-0 pb-0.5">
               </CardContent>
             </Card>
             <Card className="border border-gray-200 shadow-sm bg-white">
-              <CardHeader className="pb-1 px-2 pt-2">
-                <CardTitle className="text-[10px] font-semibold text-gray-900">Empty Tile</CardTitle>
+              <CardHeader className="pb-0.5 px-1.5 pt-1.5">
+                <CardTitle className="text-[8px] font-semibold text-gray-900">Empty Tile</CardTitle>
               </CardHeader>
-              <CardContent className="pt-0 pb-1">
+              <CardContent className="pt-0 pb-0.5">
               </CardContent>
             </Card>
-            <div className="flex justify-end mt-8">
-              <Button 
-                size="sm" 
-                className="bg-blue-600 hover:bg-blue-700 text-white text-xs h-7"
-                onClick={() => {
-                  setIsSelectPlanTypeOpen(true);
-                  setSelectedPlanType("");
-                  setPlanSetupStep(0);
-                  const currentClient = CLIENTS.find((c) => c.id === id);
-                  setOwnerName(currentClient?.name || "John Smith");
-                  setBeneficiaryName("");
-                  setIntermediaryCode("");
-                  setIntermediaryAccountCode("");
-                  setPlanNotes("");
-                  setPlanObjectives("");
-                  setRiskTolerance("");
-                  setTimeHorizon("");
-                  setCreatedPlanDetails(null);
-                }}
-              >
-                Add new Plan
-              </Button>
-            </div>
+          </div>
+
+          {/* Add new Plan Button - in same row as tiles, positioned above Documents tab */}
+          <div className="col-span-1 sm:col-span-1 lg:col-span-2 flex items-end justify-end">
+            <Button 
+              size="sm" 
+              className="bg-blue-600 hover:bg-blue-700 text-white text-xs h-7 px-2 py-1"
+              onClick={() => {
+                setIsSelectPlanTypeOpen(true);
+                setSelectedPlanType("");
+                setPlanSetupStep(0);
+                const currentClient = CLIENTS.find((c) => c.id === id);
+                setOwnerName(currentClient?.name || "John Smith");
+                setBeneficiaryName("");
+                setIntermediaryCode("");
+                setIntermediaryAccountCode("");
+                setPlanNotes("");
+                setPlanObjectives("");
+                setRiskTolerance("");
+                setTimeHorizon("");
+                setCreatedPlanDetails(null);
+              }}
+            >
+              Add new Plan
+            </Button>
           </div>
 
         </div>
 
         {/* Financial Portfolio Section */}
         <Card className="border border-gray-200 shadow-sm">
-          <CardContent className="pt-3 pb-3">
+          <CardContent className="pt-2 pb-3">
             <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
               <TabsList className="flex w-full mb-2 h-8 bg-transparent p-0 gap-1">
                 <TabsTrigger value="investments" className="text-[10px] px-2 py-1.5 flex-1 whitespace-nowrap min-w-0 data-[state=active]:bg-blue-600 data-[state=active]:text-white data-[state=active]:font-semibold">
