@@ -3442,35 +3442,35 @@ const ClientDetails = () => {
         <div className="flex items-center gap-2 border-b border-gray-200 pb-2">
           <Button
             variant={clientViewTab === "summary" ? "default" : "ghost"}
-            className={clientViewTab === "summary" ? "bg-blue-600 text-white hover:bg-blue-700" : "text-gray-700 hover:bg-gray-100"}
+            className={clientViewTab === "summary" ? "bg-blue-600 text-white hover:bg-blue-700 border border-gray-300" : "text-gray-700 bg-gray-100 hover:bg-gray-200 border border-gray-300"}
             onClick={() => setClientViewTab("summary")}
           >
             Summary
           </Button>
           <Button
             variant={clientViewTab === "about" ? "default" : "ghost"}
-            className={clientViewTab === "about" ? "bg-blue-600 text-white hover:bg-blue-700" : "text-gray-700 hover:bg-gray-100"}
+            className={clientViewTab === "about" ? "bg-blue-600 text-white hover:bg-blue-700 border border-gray-300" : "text-gray-700 bg-gray-100 hover:bg-gray-200 border border-gray-300"}
             onClick={() => setClientViewTab("about")}
           >
             About
           </Button>
           <Button
             variant={clientViewTab === "notes" ? "default" : "ghost"}
-            className={clientViewTab === "notes" ? "bg-blue-600 text-white hover:bg-blue-700" : "text-gray-700 hover:bg-gray-100"}
+            className={clientViewTab === "notes" ? "bg-blue-600 text-white hover:bg-blue-700 border border-gray-300" : "text-gray-700 bg-gray-100 hover:bg-gray-200 border border-gray-300"}
             onClick={() => setClientViewTab("notes")}
           >
             Notes
           </Button>
           <Button
             variant={clientViewTab === "portfolio" ? "default" : "ghost"}
-            className={clientViewTab === "portfolio" ? "bg-blue-600 text-white hover:bg-blue-700" : "text-gray-700 hover:bg-gray-100"}
+            className={clientViewTab === "portfolio" ? "bg-blue-600 text-white hover:bg-blue-700 border border-gray-300" : "text-gray-700 bg-gray-100 hover:bg-gray-200 border border-gray-300"}
             onClick={() => setClientViewTab("portfolio")}
           >
             Plans
           </Button>
           <Button
             variant={clientViewTab === "trading" ? "default" : "ghost"}
-            className={clientViewTab === "trading" ? "bg-blue-600 text-white hover:bg-blue-700" : "text-gray-700 hover:bg-gray-100"}
+            className={clientViewTab === "trading" ? "bg-blue-600 text-white hover:bg-blue-700 border border-gray-300" : "text-gray-700 bg-gray-100 hover:bg-gray-200 border border-gray-300"}
             onClick={() => setClientViewTab("trading")}
           >
             Trading
@@ -3507,35 +3507,35 @@ const ClientDetails = () => {
             <>
               <Button
                 variant={clientViewTab === "questionnaires" ? "default" : "ghost"}
-                className={clientViewTab === "questionnaires" ? "bg-blue-600 text-white hover:bg-blue-700" : "text-gray-700 hover:bg-gray-100"}
+                className={clientViewTab === "questionnaires" ? "bg-blue-600 text-white hover:bg-blue-700 border border-gray-300" : "text-gray-700 bg-gray-100 hover:bg-gray-200 border border-gray-300"}
                 onClick={() => setClientViewTab("questionnaires")}
               >
                 Questionnaires
               </Button>
               <Button
                 variant={clientViewTab === "client-reports" ? "default" : "ghost"}
-                className={clientViewTab === "client-reports" ? "bg-blue-600 text-white hover:bg-blue-700" : "text-gray-700 hover:bg-gray-100"}
+                className={clientViewTab === "client-reports" ? "bg-blue-600 text-white hover:bg-blue-700 border border-gray-300" : "text-gray-700 bg-gray-100 hover:bg-gray-200 border border-gray-300"}
                 onClick={() => setClientViewTab("client-reports")}
               >
                 Client Reports
               </Button>
               <Button
                 variant={clientViewTab === "charts" ? "default" : "ghost"}
-                className={clientViewTab === "charts" ? "bg-blue-600 text-white hover:bg-blue-700" : "text-gray-700 hover:bg-gray-100"}
+                className={clientViewTab === "charts" ? "bg-blue-600 text-white hover:bg-blue-700 border border-gray-300" : "text-gray-700 bg-gray-100 hover:bg-gray-200 border border-gray-300"}
                 onClick={() => setClientViewTab("charts")}
               >
                 Charts
               </Button>
               <Button
                 variant={clientViewTab === "approvals" ? "default" : "ghost"}
-                className={clientViewTab === "approvals" ? "bg-blue-600 text-white hover:bg-blue-700" : "text-gray-700 hover:bg-gray-100"}
+                className={clientViewTab === "approvals" ? "bg-blue-600 text-white hover:bg-blue-700 border border-gray-300" : "text-gray-700 bg-gray-100 hover:bg-gray-200 border border-gray-300"}
                 onClick={() => setClientViewTab("approvals")}
               >
                 Approvals
               </Button>
               <Button
                 variant={clientViewTab === "attachments" ? "default" : "ghost"}
-                className={clientViewTab === "attachments" ? "bg-blue-600 text-white hover:bg-blue-700" : "text-gray-700 hover:bg-gray-100"}
+                className={clientViewTab === "attachments" ? "bg-blue-600 text-white hover:bg-blue-700 border border-gray-300" : "text-gray-700 bg-gray-100 hover:bg-gray-200 border border-gray-300"}
                 onClick={() => setClientViewTab("attachments")}
               >
                 Attachments
@@ -3902,16 +3902,16 @@ const ClientDetails = () => {
           <CardContent className="pt-2 pb-3">
             <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
               <TabsList className="flex w-full mb-2 h-8 bg-transparent p-0 gap-1">
-                <TabsTrigger value="investments" className="text-[10px] px-2 py-1.5 flex-1 whitespace-nowrap min-w-0 data-[state=active]:bg-blue-600 data-[state=active]:text-white data-[state=active]:font-semibold">
+                <TabsTrigger value="investments" className="text-[10px] px-2 py-1.5 flex-1 whitespace-nowrap min-w-0 border border-gray-300 bg-gray-100 data-[state=active]:bg-blue-600 data-[state=active]:text-white data-[state=active]:font-semibold data-[state=active]:border-gray-300">
                   Investments
                 </TabsTrigger>
-                <TabsTrigger value="cash" className="text-[10px] px-2 py-1.5 flex-1 whitespace-nowrap min-w-0 data-[state=active]:bg-blue-600 data-[state=active]:text-white data-[state=active]:font-semibold">
+                <TabsTrigger value="cash" className="text-[10px] px-2 py-1.5 flex-1 whitespace-nowrap min-w-0 border border-gray-300 bg-gray-100 data-[state=active]:bg-blue-600 data-[state=active]:text-white data-[state=active]:font-semibold data-[state=active]:border-gray-300">
                   Cash
                 </TabsTrigger>
-                <TabsTrigger value="trading-activity" className="text-[10px] px-2 py-1.5 flex-1 whitespace-nowrap min-w-0 data-[state=active]:bg-blue-600 data-[state=active]:text-white data-[state=active]:font-semibold">
+                <TabsTrigger value="trading-activity" className="text-[10px] px-2 py-1.5 flex-1 whitespace-nowrap min-w-0 border border-gray-300 bg-gray-100 data-[state=active]:bg-blue-600 data-[state=active]:text-white data-[state=active]:font-semibold data-[state=active]:border-gray-300">
                   Recent Trading Activity
                 </TabsTrigger>
-                <TabsTrigger value="documents" className="text-[10px] px-2 py-1.5 flex-1 relative whitespace-nowrap min-w-0 data-[state=active]:bg-blue-600 data-[state=active]:text-white data-[state=active]:font-semibold">
+                <TabsTrigger value="documents" className="text-[10px] px-2 py-1.5 flex-1 relative whitespace-nowrap min-w-0 border border-gray-300 bg-gray-100 data-[state=active]:bg-blue-600 data-[state=active]:text-white data-[state=active]:font-semibold data-[state=active]:border-gray-300">
                   Documents
                   <span className="absolute top-0 right-0 h-1.5 w-1.5 bg-orange-500 rounded-full"></span>
                 </TabsTrigger>
@@ -3966,11 +3966,9 @@ const ClientDetails = () => {
                         </div>
                         <div className="flex items-center gap-2 flex-shrink-0">
                           <div className="flex items-center">
-                            <div className="mr-96 p-2 px-4">
-                              <span className="text-xs font-semibold text-gray-900">
-                                ${planTotal.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-                              </span>
-                            </div>
+                            <Badge className="mr-96 bg-green-100 text-green-700 font-semibold text-xs px-3 py-1.5">
+                              ${planTotal.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                            </Badge>
                             {(() => {
                               const isZeroBalance = planTotal === 0;
                               const priceStr = firstFund?.currentPrice || "$0.00";
