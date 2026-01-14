@@ -6,6 +6,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover';
+import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 import { useInterface } from '@/context/InterfaceContext';
 
@@ -55,6 +56,17 @@ export const getInterfaceDisplayName = (interfaceType: InterfaceType): string =>
   return option?.label || 'OneBoss RepWeb';
 };
 
+const getAdvisorNameBadgeColor = (interfaceType: InterfaceType): string => {
+  const colorMap: Record<InterfaceType, string> = {
+    'intermediary-dealer': 'bg-blue-100 text-blue-700 border-blue-200',
+    'intermediary-advisor': 'bg-green-100 text-green-700 border-green-200',
+    'intermediary-client': 'bg-purple-100 text-purple-700 border-purple-200',
+    'oneboss-dealer': 'bg-orange-100 text-orange-700 border-orange-200',
+    'oneboss-advisor': 'bg-cyan-100 text-cyan-700 border-cyan-200',
+  };
+  return colorMap[interfaceType] || 'bg-gray-100 text-gray-700 border-gray-200';
+};
+
 export function InterfaceSwitcher() {
   const { currentInterface, setCurrentInterface } = useInterface();
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
@@ -71,6 +83,7 @@ export function InterfaceSwitcher() {
   };
 
   const currentDisplayName = getInterfaceDisplayName(currentInterface);
+  const badgeColor = getAdvisorNameBadgeColor(currentInterface);
 
   return (
     <Popover open={isPopoverOpen} onOpenChange={setIsPopoverOpen}>
@@ -82,6 +95,9 @@ export function InterfaceSwitcher() {
           <span className="flex items-center gap-2">
             <Monitor className="h-4 w-4" />
             <span>Current: {currentDisplayName}</span>
+            <Badge variant="outline" className={cn("text-xs", badgeColor)}>
+              Marsh, Antoine
+            </Badge>
             <ChevronDown className="h-4 w-4 ml-1" />
           </span>
         </Button>

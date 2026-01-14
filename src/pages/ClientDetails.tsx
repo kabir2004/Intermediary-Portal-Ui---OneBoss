@@ -3412,9 +3412,6 @@ const ClientDetails = () => {
               <h1 className="text-2xl font-bold text-gray-900">Client: {client.name.split(" ").reverse().join(", ")}</h1>
               <div className="flex items-center gap-2">
                 <div className="px-3 py-1.5 border border-gray-300 rounded text-sm text-gray-700 whitespace-nowrap">
-                  {clientDetails.representative.name}
-                </div>
-                <div className="px-3 py-1.5 border border-gray-300 rounded text-sm text-gray-700 whitespace-nowrap">
                   {clientDetails.representative.language}
                 </div>
                 <div className="px-3 py-1.5 border border-gray-300 rounded text-sm text-gray-700 whitespace-nowrap">
@@ -3937,9 +3934,9 @@ const ClientDetails = () => {
                   // Determine plan category display text
                   const getPlanCategoryText = () => {
                     if (plan.category === "Joint") {
-                      return `(${plan.type} Broker/Nominee, Joint) NOM ${plan.accountNumber} - 9823-2232`;
+                      return `(${plan.type} Broker/Nominee, Joint) NOM ${plan.accountNumber}`;
                     }
-                    return `(${plan.type} ${plan.name || "Client Name"}, ${plan.category}) - 9823-2232`;
+                    return `(${plan.type} ${plan.name || "Client Name"}, ${plan.category})`;
                   };
                   
                   return (
@@ -3958,7 +3955,7 @@ const ClientDetails = () => {
                                   setSelectedFundAccount(null);
                                   setSelectedTransaction(null);
                                 }}
-                              >{plan.accountNumber} {getPlanCategoryText()} Marsh, Antoine</span>
+                              >{plan.accountNumber} {getPlanCategoryText()}</span>
                             </p>
                             {plan.category === "Joint" && (
                               <div className="mt-0.5 px-1.5 py-0.5">
